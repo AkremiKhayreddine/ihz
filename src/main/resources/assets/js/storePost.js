@@ -33,6 +33,11 @@ const post = new Vue({
             maxFiles: 100,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            init: function () {
+                this.on("queuecomplete", function (file) {
+                    window.location.pathname = "/posts/"+this.post.id;
+                });
             }
         });
     }
