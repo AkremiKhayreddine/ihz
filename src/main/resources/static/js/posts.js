@@ -83,6 +83,13 @@ var posts = new Vue({
             axios.get('/api/posts').then(function (response) {
                 _this.posts = response.data;
             });
+        },
+        deletePost: function deletePost(id) {
+            var _this2 = this;
+
+            axios.delete('/api/posts/' + id).then(function (response) {
+                _this2.getPosts();
+            });
         }
     },
     mounted: function mounted() {

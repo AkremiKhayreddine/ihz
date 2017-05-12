@@ -60,7 +60,6 @@ public class PostsController {
         String userName = getPrincipal();
         User user = userService.findByName(userName);
         post.setUser(user);
-        System.out.println(post.getUser().getName());
         return postsRepository.save(post);
 
     }

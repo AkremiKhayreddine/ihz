@@ -8,6 +8,11 @@ const posts = new Vue({
             axios.get('/api/posts').then(response => {
                 this.posts = response.data;
             })
+        },
+        deletePost(id){
+            axios.delete('/api/posts/' + id).then(response => {
+                this.getPosts();
+            })
         }
     },
     mounted(){

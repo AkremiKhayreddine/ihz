@@ -19,7 +19,7 @@
                     <a class="post_title_link"
                        :href="'/posts/'+post.id"> {{ post.title }}</a>
                     <form method="post" sec:authorize="hasAuthority('Administrateur')">
-                        <button v-on:click="delete(post.id)" type="submit" class="btn btn-danger"><i
+                        <button v-on:click="deletePost(post.id)" type="submit" class="btn btn-danger"><i
                                 class="fa fa-trash"></i></button>
                     </form>
                     <a sec:authorize="hasAuthority('Administrateur')" class="btn btn-success"
