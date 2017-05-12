@@ -24,20 +24,16 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
         jdbcTemplate.execute(createAppUserUserProfileTable());
         System.out.println("create layers Table ---------------------------------------------------------------------");
         jdbcTemplate.execute(createLayersTable());
-        System.out.println("create claims Table ---------------------------------------------------------------------");
-        jdbcTemplate.execute(createClaimsTable());
-        System.out.println("create features Table -------------------------------------------------------------------");
-        jdbcTemplate.execute(createFeaturesTable());
-        System.out.println("create photos Table -------------------------------------------------------------------");
-        jdbcTemplate.execute(createPhotosTable());
-        System.out.println("create adjustments Table -------------------------------------------------------------------");
-        jdbcTemplate.execute(createAdjustmentsTable());
         System.out.println("create geoservers Table -------------------------------------------------------------------");
         jdbcTemplate.execute(createGeoserversTable());
         System.out.println("configuring geoserver -------------------------------------------------------------------");
         jdbcTemplate.execute(insertGeoserverConfig());
         System.out.println("create notifications table -------------------------------------------------------------------");
         jdbcTemplate.execute(createNotificationsTable());
+        System.out.println("create posts table -------------------------------------------------------------------");
+        jdbcTemplate.execute(createPostsTable());
+        System.out.println("create documents table -------------------------------------------------------------------");
+        jdbcTemplate.execute(createDocumentsTable());
         System.out.println("create Admin ----------------------------------------------------------------------------");
         jdbcTemplate.execute(createDefaultAdmin());
         jdbcTemplate.execute(createAdmin());
@@ -57,46 +53,6 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
                 + ");";
     }
 
-    private String createClaimsTable() {
-        return "create table claims (\n"
-                + "   id serial NOT NULL primary key,\n"
-                + "   title VARCHAR(255) NOT NULL,\n"
-                + "   description text NOT NULL,\n"
-                + "   user_id integer NOT NULL,\n"
-                + "   created_at timestamp,\n"
-                + "   updated_at timestamp,\n"
-                + "   CONSTRAINT FK_APP_USER FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE\n"
-                + ");";
-    }
-
-    private String createFeaturesTable() {
-        return "create table features (\n"
-                + "   id serial NOT NULL primary key,\n"
-                + "   lon double precision NOT NULL,\n"
-                + "   lat double precision NOT NULL,\n"
-                + "   status VARCHAR(30) NOT NULL,\n"
-                + "   claim_id integer NOT NULL,\n"
-                + "   created_at timestamp,\n"
-                + "   updated_at timestamp,\n"
-                + "   CONSTRAINT FK_APP_USER FOREIGN KEY (claim_id) REFERENCES claims (id) ON DELETE CASCADE\n"
-                + ");";
-    }
-
-    private String createPhotosTable() {
-        return "create table photos (\n"
-                + "   id serial NOT NULL primary key,\n"
-                + "   name VARCHAR(255) NOT NULL,\n"
-                + "   path VARCHAR(255) NOT NULL,\n"
-                + "   thumbnail_path VARCHAR(255) NOT NULL,\n"
-                + "   thumbnail_path_url VARCHAR(255) NOT NULL,\n"
-                + "   url VARCHAR(255) NOT NULL,\n"
-                + "   extension VARCHAR(30) NOT NULL,\n"
-                + "   claim_id integer NOT NULL,\n"
-                + "   created_at timestamp,\n"
-                + "   updated_at timestamp,\n"
-                + "   CONSTRAINT FK_APP_USER FOREIGN KEY (claim_id) REFERENCES claims (id) ON DELETE CASCADE\n"
-                + ");";
-    }
 
     private String createLayersTable() {
         return "CREATE TABLE layers ( \n"
@@ -135,6 +91,32 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
                 + ");";
     }
 
+    private String createPostsTable() {
+        return "CREATE TABLE posts ( \n"
+                + "  id serial NOT NULL primary key, \n"
+                + "  title varchar(255) NOT NULL, \n"
+                + "  description text NOT NULL, \n"
+                + "  user_id integer NOT NULL,\n"
+                + "  created_at timestamp,\n"
+                + "  updated_at timestamp,\n"
+                + "  CONSTRAINT FK_APP_USER FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE\n"
+                + ");";
+    }
+
+    private String createDocumentsTable() {
+        return "CREATE TABLE documents ( \n"
+                + "  id serial NOT NULL primary key, \n"
+                + "  name varchar(255) NOT NULL, \n"
+                + "  path varchar(255) NOT NULL, \n"
+                + "  link varchar(255) NOT NULL, \n"
+                + "  extension varchar(10) NOT NULL, \n"
+                + "  post_id integer NOT NULL,\n"
+                + "  created_at timestamp,\n"
+                + "  updated_at timestamp,\n"
+                + "  CONSTRAINT FK_POST FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE\n"
+                + ");";
+    }
+
     private String createRolesTable() {
         return "create table roles(\n"
                 + "   id serial NOT NULL primary key,\n"
@@ -162,20 +144,6 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
 
     }
 
-    private String createAdjustmentsTable() {
-        return "CREATE TABLE adjustments (\n"
-                + "   id serial NOT NULL primary key,\n"
-                + "    user_id integer NOT NULL,\n"
-                + "    claim_id integer NOT NULL,\n"
-                + "    before text,\n "
-                + "    after text,\n"
-                + "    created_at timestamp,\n"
-                + "    updated_at timestamp,\n"
-                + "    CONSTRAINT FK_USERS FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,\n"
-                + "    CONSTRAINT FK_CLAIMS FOREIGN KEY (claim_id) REFERENCES claims (id) ON DELETE CASCADE\n"
-                + ");";
-
-    }
 
 
     private String createDefaultAdmin() {
