@@ -21,7 +21,7 @@ body {
 .panel-primary {
   border: none !important;
   .panel-heading {
-    background-color: $black-color;
+    background-color: #F2F2F2;
     padding: 0 !important;
     border: none;
     display: flex;
@@ -415,7 +415,6 @@ ul.contact-get-in-touch {
   color: white;
 }
 
-
 .btn {
   border-radius: 0;
 }
@@ -528,7 +527,7 @@ ul.contact-get-in-touch {
 .slideThree {
   width: 70px;
   height: 26px;
-  background: darken($primary-color,5%);
+  background: darken($primary-color, 5%);
   margin: 0px auto;
   position: relative;
   border-radius: 50px;
@@ -640,6 +639,30 @@ ul.contact-get-in-touch {
   .ls-bg {
     width: 100% !important;
     height: 100% !important;
+  }
+}
+
+.btn-danger {
+  background-color: #D13030 !important;
+  border: none !important;
+}
+
+.btn-success {
+  background-color: #6ABE59 !important;
+  border: none !important;
+}
+
+.btn.btn-primary {
+  i {
+    margin-right: 5px;
+  }
+}
+
+.btn-fb {
+  background-color: #3B5998 !important;
+  color: white !important;
+  i {
+    margin-right: 5px;
   }
 }
 

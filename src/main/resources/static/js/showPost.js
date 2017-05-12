@@ -87,12 +87,13 @@ var post = new Vue({
         },
         fbShare: function fbShare() {
             var vm = this;
-            var url = window.location;
+            var url = window.location.href;
+            console.log(url);
             FB.ui({
                 method: 'share',
-                href: 'https://ihz-java.herokuapp.com/posts/5',
+                href: url,
                 title: vm.post.title,
-                link: 'https://ihz-java.herokuapp.com/posts/5',
+                link: url,
                 picture: 'http://www.groupstudy.in/img/logo3.jpeg',
                 description: vm.post.description
             }, function (response) {});
