@@ -34,6 +34,8 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
         jdbcTemplate.execute(createPostsTable());
         System.out.println("create documents table -------------------------------------------------------------------");
         jdbcTemplate.execute(createDocumentsTable());
+        System.out.println("create statistics table -------------------------------------------------------------------");
+        jdbcTemplate.execute(createStatisticsTable());
         System.out.println("create Admin ----------------------------------------------------------------------------");
         jdbcTemplate.execute(createDefaultAdmin());
         jdbcTemplate.execute(createAdmin());
@@ -117,6 +119,18 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
                 + ");";
     }
 
+    private String createStatisticsTable() {
+        return "CREATE TABLE statistics ( \n"
+                + "  id serial NOT NULL primary key, \n"
+                + "  nappe varchar(255) NOT NULL, \n"
+                + "  date varchar(255) NOT NULL, \n"
+                + "  type varchar(255) NOT NULL, \n"
+                + "  valeur double(8,2) NOT NULL, \n"
+                + "  created_at timestamp,\n"
+                + "  updated_at timestamp\n"
+                + ");";
+    }
+
     private String createRolesTable() {
         return "create table roles(\n"
                 + "   id serial NOT NULL primary key,\n"
@@ -143,7 +157,6 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
                 + ");";
 
     }
-
 
 
     private String createDefaultAdmin() {

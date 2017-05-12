@@ -30,6 +30,8 @@ public class V1_0__InitDatabase implements SpringJdbcMigration {
         jdbcTemplate.execute(createPostsTable());
         System.out.println("create documents table -------------------------------------------------------------------");
         jdbcTemplate.execute(createDocumentsTable());
+        System.out.println("create statistics table -------------------------------------------------------------------");
+        jdbcTemplate.execute(createStatisticsTable());
         System.out.println("create Admin ----------------------------------------------------------------------------");
         jdbcTemplate.execute(createDefaultAdmin());
         jdbcTemplate.execute(createAdmin());
@@ -101,6 +103,19 @@ public class V1_0__InitDatabase implements SpringJdbcMigration {
                 + "  created_at timestamp,\n"
                 + "  updated_at timestamp,\n"
                 + "  CONSTRAINT FK_APP_USER FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,\n"
+                + "  PRIMARY KEY (id)\n"
+                + ");";
+    }
+
+    private String createStatisticsTable() {
+        return "CREATE TABLE statistics ( \n"
+                + "  id int(11) NOT NULL AUTO_INCREMENT, \n"
+                + "  nappe varchar(255) NOT NULL, \n"
+                + "  date varchar(255) NOT NULL, \n"
+                + "  type varchar(255) NOT NULL, \n"
+                + "  valeur double(8,2) NOT NULL, \n"
+                + "  created_at timestamp,\n"
+                + "  updated_at timestamp,\n"
                 + "  PRIMARY KEY (id)\n"
                 + ");";
     }

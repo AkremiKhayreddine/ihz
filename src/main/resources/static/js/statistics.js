@@ -96,7 +96,7 @@ var statistics = new Vue({
         getData: function getData() {
             var _this = this;
 
-            axios.get('/getData', {
+            axios.get('/api/statistics/getData', {
                 params: {
                     nappe: this.nappe,
                     type: this.type
@@ -201,7 +201,7 @@ var statistics = new Vue({
         getDates: function getDates() {
             var vm = this;
             return new Promise(function (resolve, reject) {
-                axios.get('/getDates', {
+                axios.get('/statistics/getDates', {
                     params: {
                         type: vm.type
                     }
@@ -219,7 +219,7 @@ var statistics = new Vue({
             var vm = this;
             this.message = this.type + ' de zaghouan';
             return new Promise(function (resolve, reject) {
-                axios.get('/getNappesWithType', {
+                axios.get('/api/statistics/getNappesWithType', {
                     params: {
                         type: vm.type
                     }
@@ -236,7 +236,7 @@ var statistics = new Vue({
     mounted: function mounted() {
         var _this2 = this;
 
-        axios.post('/getTypes').then(function (response) {
+        axios.post('/api/statistics/getTypes').then(function (response) {
             _this2.types = response.data;
             _this2.type = response.data[0];
         });
