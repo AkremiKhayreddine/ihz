@@ -36,7 +36,7 @@ const post = new Vue({
             },
             init: function () {
                 this.on("queuecomplete", function (file) {
-                    window.location.pathname = "/posts/"+this.post.id; 
+                    window.location.pathname = "/posts/"+vm.post.id; 
                 });
             }
         });
