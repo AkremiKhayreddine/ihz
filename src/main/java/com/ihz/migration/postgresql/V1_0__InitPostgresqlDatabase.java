@@ -125,7 +125,7 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
                 + "  nappe varchar(255) NOT NULL, \n"
                 + "  date varchar(255) NOT NULL, \n"
                 + "  type varchar(255) NOT NULL, \n"
-                + "  valeur double(8,2) NOT NULL, \n"
+                + "  valeur double precision NOT NULL, \n"
                 + "  created_at timestamp,\n"
                 + "  updated_at timestamp\n"
                 + ");";
