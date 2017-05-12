@@ -84,6 +84,18 @@ var post = new Vue({
             axios.get("/api/" + url).then(function (response) {
                 _this.post = response.data;
             });
+        },
+        fbShare: function fbShare() {
+            var vm = this;
+            var url = window.location;
+            FB.ui({
+                method: 'share',
+                href: 'https://ihz-java.herokuapp.com/posts/5',
+                title: vm.post.title,
+                link: 'https://ihz-java.herokuapp.com/posts/5',
+                picture: 'http://www.groupstudy.in/img/logo3.jpeg',
+                description: vm.post.description
+            }, function (response) {});
         }
     },
     mounted: function mounted() {

@@ -161,7 +161,7 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
 
     private String createDefaultAdmin() {
         return "INSERT INTO users (id, name, password, email) VALUES"
-                + "(1, 'admin', '$2a$10$MvwUYRexceCXTm7CEeD56u8O0ikZ8FF20Z/2H0FhJsCKvHF83RV2W','admin@urbupdate.tn');";
+                + "(1, 'admin', '$2a$10$MvwUYRexceCXTm7CEeD56u8O0ikZ8FF20Z/2H0FhJsCKvHF83RV2W','admin@ihz.tn');";
     }
 
     private String createAdmin() {
