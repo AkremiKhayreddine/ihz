@@ -1,0 +1,106 @@
+.navbar-static-top {
+  margin: 0;
+  background-color: white !important;
+  box-shadow: none;
+  .navbar-header {
+    margin-right: 50px;
+    padding: 10px;
+  }
+  .navbar-form {
+    margin-top: 50px;
+    .form-group {
+      .input-group {
+        input.form-control {
+          background-color: $black-color;
+          border: none;
+          box-shadow: none;
+          width: 300px;
+          color: white;
+        }
+        .btn {
+          background-color: $primary-color;
+          color: white;
+        }
+      }
+      .dropdown-menu {
+        width: 346px;
+        border-radius: 0;
+        li {
+          a {
+            padding: 10px 5px;
+          }
+        }
+      }
+    }
+  }
+  .navbar-brand {
+    padding: 0 !important;
+    margin: 0 !important;
+    height: 120px;
+    img {
+      height: 100%;
+    }
+  }
+}
+
+.navbar {
+  background-color: $black-color;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  .navbar-collapse {
+    .navbar-nav {
+      li {
+        a, a:active, a:focus {
+          color: white;
+        }
+        a:hover {
+          background-color: lighten($black-color, 5%);
+        }
+      }
+      li.active {
+        border-bottom: 4px solid $primary-color;
+        margin-top: -4px;
+        a, a:active, a:focus, a:hover {
+          background-color: lighten($black-color, 5%);
+          color: white;
+        }
+      }
+      li.open {
+        a.dropdown-toggle, a:active.dropdown-toggle, a:focus.dropdown-toggle, a:hover.dropdown-toggle {
+          color: white;
+          background-color: transparent;
+        }
+      }
+      li.dropdown {
+        a.dropdown-toggle {
+          color: white;
+        }
+        .dropdown-menu {
+          padding: 0;
+          border: none;
+          li {
+            margin: 0;
+            a {
+              color: $black-color;
+              padding: 8px 25px;
+              border-bottom: 1px solid lighten(#dddddd, 5%);
+            }
+            a:hover {
+              color: $primary-color;
+              background-color: transparent;
+            }
+          }
+          li.active {
+            border-bottom: none !important;
+            a, a:active, a:focus, a:hover {
+              background-color: transparent;
+              color: $primary-color;
+            }
+          }
+        }
+
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/layout">
+
+<main layout:fragment="page">
+    <div class="col-sm-9" id="posts">
+        <div class="posts_header">
+            <a class="btn btn-primary" th:href="@{/posts/create}">
+                <i class="fa fa-share"></i>Publier un nouveau document
+            </a>
+        </div>
+        <div class="post" v-for="post in posts">
+            <div class="post_media">
+                <img th:src="@{/images/post.jpg}" />
+            </div>
+            <div class="post_content">
+                <div class="post_title">
+                    <a class="post_title_link"
+                       :href="'/posts/'+post.id"> {{ post.title }}</a>
+                    <form method="post" sec:authorize="hasAuthority('Administrateur')">
+                        <button v-on:click="delete(post.id)" type="submit" class="btn btn-danger"><i
+                                class="fa fa-trash"></i></button>
+                    </form>
+                    <a sec:authorize="hasAuthority('Administrateur')" class="btn btn-success"
+                       :href="'/posts/'+post.id+'/edit'"><i class="fa fa-edit"></i> </a>
+                </div>
+                <ul class="post_information">
+                    <li class="post_information_user"> {{ post.user.name }} |</li>
+                    <li class="post_information_date">{{ post.created_at }}</li>
+                </ul>
+                <div class="post_description">
+                    {{ post.description }}
+                </div>
+                <ul class="post_files">
+                    <li v-for="document in post.documents">
+                        <a :href="document.link">
+                            <i class="fa fa-file"></i>
+                            {{ document.name }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="post_actions">
+                <button :id="'fbShare'+post.id" class="btn btn-primary">Publier sur facebook</button>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block layout:fragment="script">
+    <script type='text/javascript' th:src="@{/js/posts.js}"></script>
+</th:block>
+</html>

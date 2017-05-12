@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/layout">
+
+<main layout:fragment="page">
+    <div class="col-sm-9">
+        <div class="post" id="post">
+            <div class="post_media">
+                <img th:src="@{/images/post.jpg}" />
+            </div>
+            <div class="post_content">
+                <div class="post_title">
+                    {{ post.title }}
+                </div>
+                <ul class="post_information">
+                    <li class="post_information_user"> {{ post.user.name }} |</li>
+                    <li class="post_information_date">{{ post.created_at }}</li>
+                </ul>
+                <div class="post_description">
+                    {{ post.description }}
+                </div>
+                <ul class="post_files">
+                    <li v-for="document in post.documents">
+                        <a :href="document.link">
+                            <i class="fa fa-file"></i>
+                            {{ document.name }}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="post_actions">
+                <button id="'fbShare'+post.id" class="btn btn-primary">Publier sur facebook</button>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block layout:fragment="script">
+    <script type='text/javascript' th:src="@{/js/showPost.js}"></script>
+</th:block>
+</html>
