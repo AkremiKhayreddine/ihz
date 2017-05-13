@@ -20653,6 +20653,17 @@ window.select2 = __webpack_require__(49);
 window.Dropzone = __webpack_require__(46);
 window.moment = __webpack_require__(70);
 window.moment.locale('fr');
+(function ($) {
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 140) {
+                $('.navbar-bottom').addClass('navbar-fixed-top');
+            } else {
+                $('.navbar-bottom').removeClass('navbar-fixed-top');
+            }
+        });
+    });
+})(jQuery);
 Vue.component('select2', {
     props: ['options', 'value', 'multiple', 'change'],
     template: '<select ref="select" :multiple="multiple"><slot></slot></select>',

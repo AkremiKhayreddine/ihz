@@ -12,7 +12,7 @@
       .input-group {
         margin-right: 15px;
         input.form-control {
-          background-color: lighten($black-color,5%);
+          background-color: lighten($black-color, 5%);
           border: none;
           box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
           width: 300px;
@@ -73,7 +73,7 @@
         }
       }
       li.dropdown {
-        a.dropdown-toggle,a.dropdown-toggle:active, a.dropdown-toggle:focus {
+        a.dropdown-toggle, a.dropdown-toggle:active, a.dropdown-toggle:focus {
           color: $black-color;
         }
         .dropdown-menu {
@@ -103,4 +103,9 @@
       }
     }
   }
+}
+
+.navbar-fixed-top {
+  width: 90%;
+  margin-left: 5%;
 }

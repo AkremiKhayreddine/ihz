@@ -29,6 +29,17 @@ window.select2 = require('select2');
 window.Dropzone = require("dropzone");
 window.moment = require('moment');
 window.moment.locale('fr');
+(function ($) {
+    $(document).ready(function () {
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 140) {
+                $('.navbar-bottom').addClass('navbar-fixed-top');
+            } else {
+                $('.navbar-bottom').removeClass('navbar-fixed-top');
+            }
+        });
+    });
+}(jQuery));
 Vue.component('select2', {
     props: ['options', 'value', 'multiple', 'change'],
     template: '<select ref="select" :multiple="multiple"><slot></slot></select>',
@@ -72,7 +83,7 @@ const documentsSearch = new Vue({
         search(){
             axios.post('/documents/search', {
                 title: this.searchFor,
-            }).then(response=> {
+            }).then(response => {
                 this.results = response.data;
                 $("#mybutton").dropdown('toggle')
             });
