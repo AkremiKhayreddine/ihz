@@ -26,7 +26,7 @@
                 </div>
                 <ul class="post_information">
                     <li class="post_information_user"> {{ post.user.name }} |</li>
-                    <li class="post_information_date">{{ post.created_at }}</li>
+                    <li class="post_information_date">{{ post.updated_at }}</li>
                 </ul>
                 <div class="post_description">
                     {{ post.description }}
@@ -41,12 +41,18 @@
                 </ul>
             </div>
             <div class="post_actions">
-                <button :id="'fbShare'+post.id" class="btn btn-fb"><i class="fa fa-facebook"></i> Publier sur facebook</button>
+                <button v-on:click="fbShare(post.id)" class="btn btn-fb"><i class="fa fa-facebook"></i> Publier sur
+                    facebook
+                </button>
             </div>
         </div>
     </div>
+    <aside class="col-md-3" th:replace="posts/fragments/sidebar :: sidebar">
+
+    </aside>
 </main>
 <th:block layout:fragment="script">
     <script type='text/javascript' th:src="@{/js/posts.js}"></script>
+    <script type='text/javascript' th:src="@{/js/sidebar.js}"></script>
 </th:block>
 </html>

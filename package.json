@@ -21,6 +21,7 @@
   "dependencies": {
     "c3": "^0.4.11",
     "dropzone": "^4.3.0",
+    "moment": "^2.18.1",
     "select2": "^4.0.3"
   }
 }

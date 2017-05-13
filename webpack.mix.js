@@ -8,6 +8,7 @@ mix.js('src/main/resources/assets/js/app.js', 'src/main/resources/static/js')
     .js('src/main/resources/assets/js/posts.js', 'src/main/resources/static/js')
     .js('src/main/resources/assets/js/storePost.js', 'src/main/resources/static/js')
     .js('src/main/resources/assets/js/showPost.js', 'src/main/resources/static/js')
+    .js('src/main/resources/assets/js/sidebar.js', 'src/main/resources/static/js')
     .sass('src/main/resources/assets/sass/app.scss', 'src/main/resources/static/css');
 mix.styles([
     'src/main/resources/static/css/app.css',

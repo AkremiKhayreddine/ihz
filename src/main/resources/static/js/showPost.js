@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 53);
+/******/ 	return __webpack_require__(__webpack_require__.s = 54);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -83,12 +83,12 @@ var post = new Vue({
             var url = window.location.pathname;
             axios.get("/api/" + url).then(function (response) {
                 _this.post = response.data;
+                _this.post.updated_at = moment(_this.post.updated_at).from(moment());
             });
         },
         fbShare: function fbShare() {
             var vm = this;
             var url = window.location.href;
-            console.log(url);
             FB.ui({
                 method: 'share',
                 href: url,
@@ -106,7 +106,7 @@ var post = new Vue({
 
 /***/ }),
 
-/***/ 53:
+/***/ 54:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(16);

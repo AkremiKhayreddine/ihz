@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 56);
+/******/ 	return __webpack_require__(__webpack_require__.s = 58);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -119,61 +119,6 @@ var Errors = function () {
 
     return Errors;
 }();
-
-/***/ }),
-
-/***/ 19:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(2);
-
-var post = new Vue({
-    el: '#post',
-    data: {
-        zone: {},
-        post: {
-            id: 0
-        },
-        form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
-            model: {
-                title: '',
-                description: ''
-            }
-        })
-    },
-    methods: {
-        create: function create() {
-            var _this = this;
-
-            this.form.post('/posts').then(function (data) {
-                _this.post.id = data.id;
-                _this.zone.options.url = "/posts/" + _this.post.id + "/upload";
-                _this.zone.processQueue();
-            });
-        }
-    },
-    mounted: function mounted() {
-        var vm = this;
-        Dropzone.autoDiscover = false;
-        this.zone = new Dropzone('#dzone', {
-            url: "/posts/" + vm.post.id + "/upload",
-            autoProcessQueue: false,
-            uploadMultiple: true,
-            parallelUploads: 100,
-            maxFiles: 100,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            init: function init() {
-                this.on("queuecomplete", function (file) {
-                    window.location.pathname = "/posts/" + vm.post.id;
-                });
-            }
-        });
-    }
-});
 
 /***/ }),
 
@@ -259,10 +204,65 @@ var Form = function () {
 
 /***/ }),
 
-/***/ 56:
+/***/ 20:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(2);
+
+var post = new Vue({
+    el: '#post',
+    data: {
+        zone: {},
+        post: {
+            id: 0
+        },
+        form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
+            model: {
+                title: '',
+                description: ''
+            }
+        })
+    },
+    methods: {
+        create: function create() {
+            var _this = this;
+
+            this.form.post('/posts').then(function (data) {
+                _this.post.id = data.id;
+                _this.zone.options.url = "/posts/" + _this.post.id + "/upload";
+                _this.zone.processQueue();
+            });
+        }
+    },
+    mounted: function mounted() {
+        var vm = this;
+        Dropzone.autoDiscover = false;
+        this.zone = new Dropzone('#dzone', {
+            url: "/posts/" + vm.post.id + "/upload",
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            maxFiles: 100,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            init: function init() {
+                this.on("queuecomplete", function (file) {
+                    window.location.pathname = "/posts/" + vm.post.id;
+                });
+            }
+        });
+    }
+});
+
+/***/ }),
+
+/***/ 58:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(19);
+module.exports = __webpack_require__(20);
 
 
 /***/ })

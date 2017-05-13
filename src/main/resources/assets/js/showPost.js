@@ -8,12 +8,12 @@ const post = new Vue({
             var url = window.location.pathname;
             axios.get("/api/" + url).then(response => {
                 this.post = response.data;
+                this.post.updated_at = moment(this.post.updated_at).from(moment());
             });
         },
         fbShare(){
             let vm = this;
             var url = window.location.href;
-            console.log(url);
             FB.ui({
                 method: 'share',
                 href: url,

@@ -63,61 +63,42 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 53);
+/******/ 	return __webpack_require__(__webpack_require__.s = 55);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 15:
+/***/ 17:
 /***/ (function(module, exports) {
 
-var posts = new Vue({
-    el: "#posts",
+var sidebar = new Vue({
+    el: "#sidebar",
     data: {
-        posts: []
+        latests: []
     },
     methods: {
-        getPosts: function getPosts() {
+        getLatests: function getLatests() {
             var _this = this;
 
-            axios.get('/api/posts').then(function (response) {
-                _this.posts = response.data;
-                for (var i in _this.posts) {
-                    _this.posts[i].updated_at = moment(_this.posts[i].updated_at).from(moment());
+            axios.get("/api/posts/latests").then(function (response) {
+                _this.latests = response.data;
+                for (var i in _this.latests) {
+                    _this.latests[i].updated_at = moment(_this.latests[i].updated_at).from(moment());
                 }
             });
-        },
-        deletePost: function deletePost(id) {
-            var _this2 = this;
-
-            axios.delete('/api/posts/' + id).then(function (response) {
-                _this2.getPosts();
-            });
-        },
-        fbShare: function fbShare(id) {
-            var vm = this;
-            var url = window.location.href;
-            FB.ui({
-                method: 'share',
-                href: url,
-                title: vm.posts[id].title,
-                link: url,
-                picture: 'http://www.groupstudy.in/img/logo3.jpeg',
-                description: vm.posts[id].description
-            }, function (response) {});
         }
     },
     mounted: function mounted() {
-        this.getPosts();
+        this.getLatests();
     }
 });
 
 /***/ }),
 
-/***/ 53:
+/***/ 55:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(15);
+module.exports = __webpack_require__(17);
 
 
 /***/ })

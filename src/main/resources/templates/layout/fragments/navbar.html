@@ -47,10 +47,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false"><span sec:authentication="name"></span><span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li sec:authorize="hasAuthority('Administrateur')"><a th:href="@{/geoserver}">Geoserver</a></li>
-                        <li sec:authorize="hasAuthority('Administrateur')"><a th:href="@{/data}">gestion des données</a></li>
-                        <li sec:authorize="hasAuthority('Administrateur')"><a th:href="@{/users}">gestion des utilisateurs</a></li>
-                        <li sec:authorize="hasAuthority('Administrateur')"><a th:href="@{/maps}">gestion des cartes</a></li>
+                        <li sec:authorize="hasAuthority('Administrateur')"><a th:href="@{/admin/dashboard}">tableau de bord</a></li>
                         <li><a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="fa fa-sign-out"></i> Déconnecter
                         </a>

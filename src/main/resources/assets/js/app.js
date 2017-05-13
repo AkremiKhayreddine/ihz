@@ -27,6 +27,8 @@ window.fbAsyncInit = function () {
 }(document, 'script', 'facebook-jssdk'));
 window.select2 = require('select2');
 window.Dropzone = require("dropzone");
+window.moment = require('moment');
+window.moment.locale('fr');
 Vue.component('select2', {
     props: ['options', 'value', 'multiple', 'change'],
     template: '<select ref="select" :multiple="multiple"><slot></slot></select>',

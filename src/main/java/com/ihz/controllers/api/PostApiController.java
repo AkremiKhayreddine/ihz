@@ -19,7 +19,12 @@ public class PostApiController {
 
     @RequestMapping(value = "")
     public List<Post> index() {
-        return postsRepository.findAll();
+        return postsRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    @RequestMapping(value = "/latests")
+    public List<Post> latests() {
+        return postsRepository.findFirst5ByOrderByCreatedAtDesc();
     }
 
     @RequestMapping(value = "/{post}", method = RequestMethod.GET)
