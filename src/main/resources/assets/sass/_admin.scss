@@ -1,0 +1,32 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.admin-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  color: white;
+}
+
+.bg-blue {
+  background-color: $primary-color;
+}
+
+.bg-red {
+  background-color: $red;
+}
+
+.bg-green {
+  background-color: $green;
+}
+
+.bg-black {
+  background-color: $black-color;
+}

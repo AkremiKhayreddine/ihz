@@ -63,12 +63,72 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 57);
+/******/ 	return __webpack_require__(__webpack_require__.s = 176);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 1:
+/***/ 136:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(3);
+
+var statisticsdb = new Vue({
+    el: '#statisticsdb',
+    data: {
+        statistics: [],
+        form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
+            model: {
+                nappe: '',
+                date: '',
+                type: '',
+                valeur: 0
+            }
+        }),
+        addNewStatistic: false
+    },
+    methods: {
+        saveNewStatistic: function saveNewStatistic() {
+            var _this = this;
+
+            this.form.post('/statistics').then(function (response) {
+                _this.getStatistics();
+            });
+        },
+        deleteStatistic: function deleteStatistic(id) {
+            var _this2 = this;
+
+            this.form.delete('/statistics/' + id).then(function (response) {
+                _this2.getStatistics();
+            });
+        },
+        getStatistics: function getStatistics() {
+            var _this3 = this;
+
+            axios.get('/api/statistics').then(function (response) {
+                _this3.statistics = response.data;
+                _this3.addNewStatistic = false;
+            });
+        }
+    },
+    mounted: function mounted() {
+        this.getStatistics();
+    }
+});
+
+/***/ }),
+
+/***/ 176:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(136);
+
+
+/***/ }),
+
+/***/ 2:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -122,63 +182,11 @@ var Errors = function () {
 
 /***/ }),
 
-/***/ 19:
+/***/ 3:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(2);
-
-var statisticsdb = new Vue({
-    el: '#statisticsdb',
-    data: {
-        statistics: [],
-        form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
-            model: {
-                nappe: '',
-                date: '',
-                type: '',
-                valeur: 0
-            }
-        }),
-        addNewStatistic: false
-    },
-    methods: {
-        saveNewStatistic: function saveNewStatistic() {
-            var _this = this;
-
-            this.form.post('/statistics').then(function (response) {
-                _this.getStatistics();
-            });
-        },
-        deleteStatistic: function deleteStatistic(id) {
-            var _this2 = this;
-
-            this.form.delete('/statistics/' + id).then(function (response) {
-                _this2.getStatistics();
-            });
-        },
-        getStatistics: function getStatistics() {
-            var _this3 = this;
-
-            axios.get('/api/statistics').then(function (response) {
-                _this3.statistics = response.data;
-                _this3.addNewStatistic = false;
-            });
-        }
-    },
-    mounted: function mounted() {
-        this.getStatistics();
-    }
-});
-
-/***/ }),
-
-/***/ 2:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Errors__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Errors__ = __webpack_require__(2);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Form; });
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -245,6 +253,11 @@ var Form = function () {
             return this.submit('delete', url);
         }
     }, {
+        key: 'patch',
+        value: function patch(url) {
+            return this.submit('patch', url);
+        }
+    }, {
         key: 'onFail',
         value: function onFail(errors) {
             this.errors.record(errors);
@@ -253,14 +266,6 @@ var Form = function () {
 
     return Form;
 }();
-
-/***/ }),
-
-/***/ 57:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(19);
-
 
 /***/ })
 

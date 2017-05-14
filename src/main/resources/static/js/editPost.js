@@ -63,44 +63,51 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 177);
+/******/ 	return __webpack_require__(__webpack_require__.s = 170);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 137:
+/***/ 130:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(3);
 
-var post = new Vue({
-    el: '#post',
+var editPost = new Vue({
+    el: "#editPost",
     data: {
         zone: {},
-        post: {
-            id: 0
-        },
+        post: {},
         form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
-            model: {
-                title: '',
-                description: ''
-            }
+            model: {}
         })
+
     },
     methods: {
-        create: function create() {
+        getPost: function getPost() {
             var _this = this;
 
-            this.form.post('/posts').then(function (data) {
-                _this.post.id = data.id;
-                _this.zone.options.url = "/posts/" + _this.post.id + "/upload";
-                _this.zone.processQueue();
+            var url = window.location.pathname;
+            axios.get('/api' + url).then(function (response) {
+                _this.post = response.data;
+                _this.form.model = _this.post;
+            });
+        },
+        update: function update() {
+            var _this2 = this;
+
+            this.form.patch('/posts/' + this.post.id).then(function (data) {
+                _this2.post.id = data.id;
+                _this2.zone.options.url = "/posts/" + _this2.post.id + "/upload";
+                _this2.zone.processQueue();
             });
         }
     },
+
     mounted: function mounted() {
+        this.getPost();
         var vm = this;
         Dropzone.autoDiscover = false;
         this.zone = new Dropzone('#dzone', {
@@ -123,10 +130,10 @@ var post = new Vue({
 
 /***/ }),
 
-/***/ 177:
+/***/ 170:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(137);
+module.exports = __webpack_require__(130);
 
 
 /***/ }),

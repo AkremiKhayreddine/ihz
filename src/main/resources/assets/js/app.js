@@ -33,9 +33,11 @@ window.moment.locale('fr');
     $(document).ready(function () {
         $(window).scroll(function () {
             if ($(this).scrollTop() > 140) {
-                $('.navbar-bottom').addClass('navbar-fixed-top');
+                $('.navbar-bottom').removeClass('navbar-bottom-light');
+                $('.navbar-bottom').addClass('navbar-fixed-top navbar-bottom-black');
             } else {
-                $('.navbar-bottom').removeClass('navbar-fixed-top');
+                $('.navbar-bottom').removeClass('navbar-fixed-top  navbar-bottom-black');
+                $('.navbar-bottom').addClass('navbar-bottom-light');
             }
         });
     });

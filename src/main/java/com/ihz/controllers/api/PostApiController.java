@@ -33,6 +33,11 @@ public class PostApiController {
         return post1;
     }
 
+    @RequestMapping(value = "/{post}/edit", method = RequestMethod.GET)
+    public Post edit(@PathVariable Integer post) {
+        return postsRepository.findOne(post);
+    }
+
     @RequestMapping(value = "/{post}", method = RequestMethod.DELETE)
     public void delete(@PathVariable Integer post) {
         postsRepository.delete(post);

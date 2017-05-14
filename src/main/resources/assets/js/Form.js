@@ -1,5 +1,5 @@
-import { Errors } from './Errors';
-export  class Form {
+import {Errors} from './Errors';
+export class Form {
     constructor(data) {
         this.model = {};
         this.originalData = data;
@@ -17,8 +17,8 @@ export  class Form {
     }
 
     data() {
-        let data ={};
-        for(let property in this.model){
+        let data = {};
+        for (let property in this.model) {
             data[property] = this.model[property];
         }
         return data;
@@ -37,15 +37,23 @@ export  class Form {
                 })
         });
     }
+
     onSuccess(response) {
         this.reset();
     }
-   post(url){
-       return this.submit('post',url);
-   }
-   delete(url){
-       return this.submit('delete', url);
-   }
+
+    post(url) {
+        return this.submit('post', url);
+    }
+
+    delete(url) {
+        return this.submit('delete', url);
+    }
+
+    patch(url) {
+        return this.submit('patch', url);
+    }
+
     onFail(errors) {
         this.errors.record(errors);
     }

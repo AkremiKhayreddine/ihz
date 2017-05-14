@@ -66,6 +66,17 @@ public class PostsController {
 
     }
 
+    @RequestMapping(value = "/{post}/edit", method = RequestMethod.GET)
+    public String edit() {
+        return "/posts/edit";
+    }
+
+    @RequestMapping(value = "{post}", method = RequestMethod.PATCH)
+    @ResponseBody
+    public Post update(@RequestBody Post post) {
+        return postsRepository.save(post);
+    }
+
     @RequestMapping(value = "/{post}/upload", method = RequestMethod.POST)
     @ResponseBody
     public void upload(MultipartHttpServletRequest request, @PathVariable Integer post) throws IOException {

@@ -63,12 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 55);
+/******/ 	return __webpack_require__(__webpack_require__.s = 174);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 17:
+/***/ 134:
 /***/ (function(module, exports) {
 
 var sidebar = new Vue({
@@ -95,10 +95,10 @@ var sidebar = new Vue({
 
 /***/ }),
 
-/***/ 55:
+/***/ 174:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(17);
+module.exports = __webpack_require__(134);
 
 
 /***/ })

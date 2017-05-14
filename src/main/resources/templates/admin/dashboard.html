@@ -3,5 +3,33 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorator="layout/layout">
 <main layout:fragment="page">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 widget">
+                <div class="admin-widget bg-blue">
+                    <i class="fa fa-edit"></i>
+                    <span>10</span> Articles
+                </div>
+            </div>
+            <div class="col-md-3 widget">
+                <div class="admin-widget bg-red">
+                    <i class="fa fa-file"></i>
+                    <span>10</span> Documents
+                </div>
+            </div>
+            <div class="col-md-3 widget">
+                <div class="admin-widget bg-green">
+                    <i class="fa fa-users"></i>
+                    <span>10</span> Utilisateurs
+                </div>
+            </div>
+            <div class="col-md-3 widget">
+                <div class="admin-widget bg-black">
+                    <i class="fa fa-envelope"></i>
+                    <span>10</span> Messages
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 </html>
