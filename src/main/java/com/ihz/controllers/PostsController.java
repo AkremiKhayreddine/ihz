@@ -68,7 +68,7 @@ public class PostsController {
 
     @RequestMapping(value = "/{post}/edit", method = RequestMethod.GET)
     public String edit() {
-        return "/posts/edit";
+        return "posts/edit";
     }
 
     @RequestMapping(value = "{post}", method = RequestMethod.PATCH)
