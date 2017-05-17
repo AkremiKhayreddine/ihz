@@ -941,6 +941,9 @@ var Map = function () {
             this.map.removeInteraction(this.interactionSelect);
             this.map.removeInteraction(this.interactionDelete);
             var interactionDraw = this.getDraw();
+            document.addEventListener('keydown', function (e) {
+                if (e.which == 27) interactionDraw.removeLastPoint();
+            });
             interactionDraw.on('drawstart', function (e) {
                 _this.perimetreArray = [];
                 _this.map.on('singleclick', function (evt) {

@@ -407,7 +407,7 @@ export class Map {
                             jQuery.each(props, function (key, value) {
                                 info += '<div class="col-md-4">' + key + ':</div><div class="col-md-8">' + value + '</div>';
                             });
-                            axios.get('/features/' + evt.selected[0].get(_this.layers_primary_key)).then(response=> {
+                            axios.get('/features/' + evt.selected[0].get(_this.layers_primary_key)).then(response => {
                                 info += '<div class="col-md-12 alert alert-danger">' +
                                     '<ul style="list-style: none;margin: 0;padding: 0">' +
                                     '<li>' + response.data.claim.title + '</li>' +
@@ -471,6 +471,10 @@ export class Map {
         this.map.removeInteraction(this.interactionSelect);
         this.map.removeInteraction(this.interactionDelete);
         let interactionDraw = this.getDraw();
+        document.addEventListener('keydown', function (e) {
+            if (e.which == 27)
+                interactionDraw.removeLastPoint(); 
+        });
         interactionDraw.on('drawstart', function (e) {
             _this.perimetreArray = [];
             _this.map.on('singleclick', function (evt) {
@@ -508,7 +512,7 @@ export class Map {
                 props = form.create(jQuery('#select_layer').val(), _this.layersWFS_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry()), _this.layers_primary_key, newFeature.getId());
             });
             jQuery("#saveFeature").click(function () {
-                form.submit(jQuery('#select_layer').val(), props, newFeature, _this.formatWFS_array, _this.formatGML_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry())).then(response=> {
+                form.submit(jQuery('#select_layer').val(), props, newFeature, _this.formatWFS_array, _this.formatGML_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry())).then(response => {
                     carte.form.model.lon = lon;
                     carte.form.model.lat = lat;
                     carte.form.model.feature = response;
