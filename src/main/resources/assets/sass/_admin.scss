@@ -2,14 +2,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 1px solid #dddddd;
+  height: 100px;
 }
 
 .admin-widget {
+  flex: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  color: white;
+  color: $black-color;
+
+  i {
+    font-size: 2em;
+  }
 }
 
 .bg-blue {

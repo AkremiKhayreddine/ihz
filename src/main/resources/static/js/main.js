@@ -63,18 +63,72 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 187);
+/******/ 	return __webpack_require__(__webpack_require__.s = 192);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 132:
+/***/ 1:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Errors; });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Errors = function () {
+    function Errors() {
+        _classCallCheck(this, Errors);
+
+        this.errors = {};
+    }
+
+    _createClass(Errors, [{
+        key: "record",
+        value: function record(errors) {
+            this.errors = errors;
+        }
+    }, {
+        key: "has",
+        value: function has(field) {
+            return this.errors.hasOwnProperty(field);
+        }
+    }, {
+        key: "any",
+        value: function any() {
+            return Object.keys(this.errors).length > 0;
+        }
+    }, {
+        key: "get",
+        value: function get(field) {
+            if (this.errors[field]) {
+                return this.errors[field][0];
+            }
+        }
+    }, {
+        key: "clear",
+        value: function clear(field) {
+            if (field) {
+                delete this.errors[field];
+            } else {
+                this.errors = {};
+            }
+        }
+    }]);
+
+    return Errors;
+}();
+
+/***/ }),
+
+/***/ 134:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Map__ = __webpack_require__(161);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Form__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Map__ = __webpack_require__(163);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Form__ = __webpack_require__(2);
 
 
 window.carte = new Vue({
@@ -84,10 +138,6 @@ window.carte = new Vue({
         showConfig: true,
         gMapCheckbox: true,
         positionCheckbox: false,
-        zone: {},
-        claim: {
-            id: 0
-        },
         geoserver: {},
         form: new __WEBPACK_IMPORTED_MODULE_1__Form__["a" /* Form */]({
             model: {
@@ -125,7 +175,7 @@ window.carte = new Vue({
         getAllCouches: function getAllCouches() {
             var vm = this;
             axios.post('/map/getAllCouches').then(function (response) {
-                axios.get('/map/getConfig').then(function (config) {
+                axios.get('/admin/geoserver').then(function (config) {
                     vm.geoserver = config.data;
                     var map = new __WEBPACK_IMPORTED_MODULE_0__Map__["a" /* Map */]({
                         layers: response.data,
@@ -144,58 +194,13 @@ window.carte = new Vue({
                     map.detectActionButton();
                 });
             });
-        },
-        saveClaim: function saveClaim() {
-            var _this2 = this;
-
-            this.form.post('/claims').then(function (response) {
-                _this2.claim = response;
-                _this2.zone.options.url = "/claims/" + _this2.claim.id + "/upload";
-                _this2.zone.processQueue();
-                _this2.getAllCouches();
-                $('#closeClaim').click();
-            });
-        },
-        validateFeature: function validateFeature(feature) {
-            var _this3 = this;
-
-            axios.patch('/features/' + feature, {
-                status: 'validé'
-            }).then(function (response) {
-                _this3.getAllCouches();
-                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
-            });
-        },
-        cancelFeature: function cancelFeature(feature) {
-            var _this4 = this;
-
-            axios.patch('/features/' + feature, {
-                status: 'annulé'
-            }).then(function (response) {
-                _this4.getAllCouches();
-                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
-            });
         }
     },
     mounted: function mounted() {
-        var _this5 = this;
+        var _this2 = this;
 
         this.getAuth().then(function () {
-            _this5.getAllCouches();
-            console.log(_this5.isAdmin());
-        });
-        var vm = this;
-        Dropzone.autoDiscover = false;
-        this.zone = new Dropzone('#dzone', {
-            url: "/claims/" + vm.claim.id + "/upload",
-            autoProcessQueue: false,
-            uploadMultiple: true,
-            parallelUploads: 100,
-            maxFiles: 100,
-            dictDefaultMessage: 'Déposez vos photos ici',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            _this2.getAllCouches();
         });
     },
 
@@ -356,7 +361,7 @@ ol.Overlay.Popup.prototype.isOpened = function () {
 
 /***/ }),
 
-/***/ 160:
+/***/ 162:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -439,11 +444,11 @@ var FormBuilder = function () {
 
 /***/ }),
 
-/***/ 161:
+/***/ 163:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__FormBuilder__ = __webpack_require__(160);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__FormBuilder__ = __webpack_require__(162);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Map; });
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -458,7 +463,7 @@ var Map = function () {
             _ref$defaultLayer = _ref.defaultLayer,
             defaultLayer = _ref$defaultLayer === undefined ? '' : _ref$defaultLayer,
             _ref$featureNS = _ref.featureNS,
-            featureNS = _ref$featureNS === undefined ? 'urbupdate' : _ref$featureNS,
+            featureNS = _ref$featureNS === undefined ? 'featureNS' : _ref$featureNS,
             _ref$srsName = _ref.srsName,
             srsName = _ref$srsName === undefined ? 'EPSG:32632' : _ref$srsName,
             _ref$workspace = _ref.workspace,
@@ -808,7 +813,7 @@ var Map = function () {
                 }
                 var storage = jQuery.localStorage;
                 storage.set(key, 'checked');
-                jQuery("#legende").append("" + "<div style='flex-basis: 50%;display: flex;'>" + "<div style='background-color: " + _this.layers[key]['color'] + "' class='slideThree'>" + "<input id='" + _this.layers[key]['name'] + "' type='checkbox' />" + "<label for='" + _this.layers[key]['name'] + "'></label>" + "</div>" + "<p style='margin-left: 5px'>" + _this.layers[key]['name'] + "</p>" + "</div>");
+                jQuery("#legende").append("" + "<div style='flex-basis: 15%;display: flex;'>" + "<div style='background-color: " + _this.layers[key]['color'] + "' class='slideThree'>" + "<input id='" + _this.layers[key]['name'] + "' type='checkbox' />" + "<label for='" + _this.layers[key]['name'] + "'></label>" + "</div>" + "<p style='margin-left: 5px'>" + _this.layers[key]['name'] + "</p>" + "</div>");
             });
             return _this.layersWFS_array;
         }
@@ -1039,10 +1044,10 @@ var Map = function () {
 
 /***/ }),
 
-/***/ 187:
+/***/ 192:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(132);
+module.exports = __webpack_require__(134);
 
 
 /***/ }),
@@ -1051,61 +1056,7 @@ module.exports = __webpack_require__(132);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Errors; });
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Errors = function () {
-    function Errors() {
-        _classCallCheck(this, Errors);
-
-        this.errors = {};
-    }
-
-    _createClass(Errors, [{
-        key: "record",
-        value: function record(errors) {
-            this.errors = errors;
-        }
-    }, {
-        key: "has",
-        value: function has(field) {
-            return this.errors.hasOwnProperty(field);
-        }
-    }, {
-        key: "any",
-        value: function any() {
-            return Object.keys(this.errors).length > 0;
-        }
-    }, {
-        key: "get",
-        value: function get(field) {
-            if (this.errors[field]) {
-                return this.errors[field][0];
-            }
-        }
-    }, {
-        key: "clear",
-        value: function clear(field) {
-            if (field) {
-                delete this.errors[field];
-            } else {
-                this.errors = {};
-            }
-        }
-    }]);
-
-    return Errors;
-}();
-
-/***/ }),
-
-/***/ 3:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Errors__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Errors__ = __webpack_require__(1);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Form; });
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 

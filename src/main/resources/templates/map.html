@@ -20,36 +20,31 @@
 
             </div>
         </div>
-        <transition name="bounce">
-            <div v-show="showConfig" class="map-params">
-                <div class="map-params_after">
+        <div class="map-params">
+            <div class="map-params_after">
 
-                </div>
-                <div class="map-config">
-                    <div class="google-map-tittle">Google map</div>
-                    <div class="slideThree">
-                        <input id="google-map-status" type="checkbox" v-model="gMapCheckbox"/>
-                        <label for="google-map-status"></label>
-                    </div>
-                    <div class="track-tittle">Position</div>
-                    <div class="slideThree">
-                        <input id="track" type="checkbox" v-model="positionCheckbox"/>
-                        <label for="track"></label>
-                    </div>
-                    <button id="btnSelect" class="btn btn-default">
-                        <i class="fa fa-hand-pointer-o"></i>
-                    </button>
-                    <button id="btnArea" class="btn btn-default">
-                        <i class="fa fa-pencil"></i>
-                    </button>
-                    <button id="btnDelete" class="btn btn-default">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                </div>
             </div>
-        </transition>
-        <div class="map-params_before">
-            <a v-on:click="showConfig = !showConfig"><i class="fa fa-cogs"></i> </a>
+            <div class="map-config">
+                <div class="google-map-tittle">Google map</div>
+                <div class="slideThree">
+                    <input id="google-map-status" type="checkbox" v-model="gMapCheckbox"/>
+                    <label for="google-map-status"></label>
+                </div>
+                <div class="track-tittle">Position</div>
+                <div class="slideThree">
+                    <input id="track" type="checkbox" v-model="positionCheckbox"/>
+                    <label for="track"></label>
+                </div>
+                <button id="btnSelect" class="btn btn-default">
+                    <i class="fa fa-hand-pointer-o"></i>
+                </button>
+                <button id="btnArea" class="btn btn-default">
+                    <i class="fa fa-pencil"></i>
+                </button>
+                <button id="btnDelete" class="btn btn-default">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
         </div>
         <div style="width: 100%" id="wrapper">
             <div style="display:none" id="location"></div>
@@ -80,85 +75,6 @@
                         <button id="closeModal" type="button" class="btn btn-default" data-dismiss="modal">Fermer
                         </button>
                         <button class="btn btn-primary" id="saveFeature">Ajouter</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Trigger the modal with a button -->
-        <button id="addClaim" type="button" class="btn btn-info btn-lg hidden" data-toggle="modal"
-                data-target="#claim">Open Modal
-        </button>
-
-        <!-- Modal -->
-        <div id="claim" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Ajouter une réclamation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <form class="post-form" v-on:submit.prevent="saveClaim" v-on:keydown="
-                        form.errors.clear($event.target.name)" enctype="multipart/form-data">
-                            <div class="form-group" v-bind:class="{'has-error': form.errors.get('title')}">
-                                <label for="title" class="control-label">Titre</label>
-                                <div>
-                                    <input id="title" v-model="form.model.title" type="text" class="form-control"/>
-                                    <span class="help-block"><strong v-text="form.errors.get('title')"></strong> </span>
-                                </div>
-                            </div>
-                            <div class="form-group" v-bind:class="{'has-error': form.errors.get('description')}">
-                                <label for="description" class="control-label">Description</label>
-                                <div>
-                                    <textarea v-model="form.model.description" id="description"
-                                              class="form-control"></textarea>
-                                    <span class="help-block"><strong v-text="form.errors.get('title')"></strong> </span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="row">
-                                    <div class="col-md-4" v-bind:class="{'has-error': form.errors.get('lon')}">
-                                        <label for="lon" class="control-label">lon</label>
-                                        <div>
-                                            <input type="text" v-model="form.model.lon" id="lon" class="form-control"/>
-                                            <span class="help-block"><strong
-                                                    v-text="form.errors.get('lon')"></strong> </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4" v-bind:class="{'has-error': form.errors.get('lat')}">
-                                        <label for="lat" class="control-label">lat</label>
-                                        <div>
-                                            <input v-model="form.model.lat" id="lat" class="form-control" type="text"/>
-                                            <span class="help-block"><strong
-                                                    v-text="form.errors.get('lat')"></strong> </span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4" v-bind:class="{'has-error': form.errors.get('feature')}">
-                                        <label for="feature" class="control-label">feature</label>
-                                        <div>
-                                            <input v-model="form.model.feature" id="feature" class="form-control"
-                                                   type="text"/>
-                                            <span class="help-block"><strong
-                                                    v-text="form.errors.get('feature')"></strong> </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div id="dzone" class="dropzone">
-                                    <div class="dropzone-previews"></div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button id="closeClaim" type="button" class="btn btn-default" data-dismiss="modal">Annuler
-                        </button>
-                        <button class="btn btn-primary" id="saveClaim" v-on:click="saveClaim">Ajouter</button>
                     </div>
                 </div>
 

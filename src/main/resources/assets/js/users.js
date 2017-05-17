@@ -40,6 +40,30 @@ window.users = new Vue({
                 this.roles = response.data;
             });
         },
+        addUser(){
+            this.form.post('/api/users').then(data => {
+                $('#closeUserModal').click();
+                this.getUsers();
+            });
+        },
+        editUser(){
+            this.editForm.patch('/api/users/' + this.editForm.model.id).then(data => {
+                $('#closeEditModal').click();
+                this.getUsers();
+            });
+        },
+        deleteUser(userId){
+            axios.delete('/api/users/' + userId).then(() => {
+                this.getUsers();
+            });
+        },
+        assignRole(user){
+            axios.post('/api/users/' + user.id + '/assignRole', {
+                roles: user.roles
+            }).then(response => {
+
+            });
+        }
     },
     mounted(){
         this.getUsers();

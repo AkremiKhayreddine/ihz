@@ -25,10 +25,115 @@ window.fbAsyncInit = function () {
     js.src = "//connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
+window.spectrum = require('spectrum-colorpicker');
 window.select2 = require('select2');
 window.Dropzone = require("dropzone");
 window.moment = require('moment');
 window.moment.locale('fr');
+Vue.component('layer-color', {
+    props: ['color', 'layer', 'showinput'],
+    template: '<input type="text" />',
+    mounted(){
+        let vm = this;
+        $(this.$el).css("background-color", this.color);
+        $(this.$el).css("color", "#FFFFFF");
+        $(this.$el).val(this.color);
+        $(this.$el).spectrum({
+            color: this.color,
+            showInput: vm.showinput,
+            showAlpha: true,
+            showInitial: true,
+            preferredFormat: 'rgb',
+            chooseText: "Choisir",
+            cancelText: "Annuler",
+            change: function (color) {
+                $(vm.$el).val(color);
+                $(vm.$el).css("background-color", color);
+            },
+            move: function (color) {
+                $(vm.$el).css("background-color", color);
+                $(vm.$el).val(color);
+            },
+            hide: function (color) {
+                $(vm.$el).val(color);
+                $(vm.$el).css("background-color", color);
+                if (vm.layer.id) {
+                    axios.patch('/layers/' + vm.layer.id, {
+                        id: vm.layer.id,
+                        stroke: vm.layer.stroke,
+                        active: vm.layer.active,
+                        name: vm.layer.name,
+                        color: $(vm.$el).val()
+                    }).then(() => {
+
+                    });
+                } else {
+                    layers.form.model.color = $(vm.$el).val();
+                }
+            }
+        });
+        if (vm.showinput) {
+            $(this.$el).css("display", "inline");
+        }
+        $(this.$el).css("box-shadow", "none");
+        $(this.$el).css("outline", "none");
+        $(this.$el).css("border", "0");
+        $(this.$el).css("padding", "5px");
+        $(this.$el).css("margin-right", "10px");
+    },
+});
+Vue.component('layer-stroke', {
+    props: ['stroke', 'layer', 'showinput'],
+    template: '<input type="text" />',
+    mounted(){
+        let vm = this;
+        $(this.$el).css("background-color", this.stroke);
+        $(this.$el).css("color", "#FFFFFF");
+        $(this.$el).val(this.stroke);
+        $(this.$el).spectrum({
+            color: this.stroke,
+            showInput: vm.showinput,
+            showAlpha: true,
+            showInitial: true,
+            preferredFormat: 'rgb',
+            chooseText: "Choisir",
+            cancelText: "Annuler",
+            change: function (color) {
+                $(vm.$el).val(color);
+                $(vm.$el).css("background-color", color);
+            },
+            move: function (color) {
+                $(vm.$el).css("background-color", color);
+                $(vm.$el).val(color);
+            },
+            hide: function (color) {
+                $(vm.$el).val(color);
+                $(vm.$el).css("background-color", color);
+                if (vm.layer.id) {
+                    axios.patch('/layers/' + vm.layer.id, {
+                        id: vm.layer.id,
+                        active: vm.layer.active,
+                        name: vm.layer.name,
+                        color: vm.layer.color,
+                        stroke: $(vm.$el).val()
+                    }).then(() => {
+
+                    });
+                } else {
+                    layers.form.model.stroke = $(vm.$el).val();
+                }
+            }
+        });
+        if (vm.showinput) {
+            $(this.$el).css("display", "inline");
+        }
+        $(this.$el).css("box-shadow", "none");
+        $(this.$el).css("outline", "none");
+        $(this.$el).css("border", "0");
+        $(this.$el).css("padding", "5px");
+        $(this.$el).css("margin-right", "10px");
+    },
+});
 (function ($) {
     $(document).ready(function () {
         $(window).scroll(function () {

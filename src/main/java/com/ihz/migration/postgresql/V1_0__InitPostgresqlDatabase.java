@@ -41,8 +41,6 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
         System.out.println("create Admin ----------------------------------------------------------------------------");
         jdbcTemplate.execute(createDefaultAdmin());
         jdbcTemplate.execute(createAdmin());
-        System.out.println("Isertion des couches --------------------------------------------------------------------");
-        jdbcTemplate.execute(createCouches());
 
     }
 
@@ -180,15 +178,8 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
         return "INSERT INTO role_user (user_id, role_id) VALUES (1,1)";
     }
 
-    private String createCouches() {
-        return "INSERT INTO layers (id, name, color, stroke, active) VALUES\n"
-                + "(1, 'Fouchana', 'rgba(30, 102, 223, 0.45)', 'rgb(255, 0, 0)', false),\n"
-                + "(2, 'Mhamdia', 'rgba(211, 227, 227, 0.45)', '#3399CC', false),\n"
-                + "(3, 'batdf_Project2_Clip', 'rgba(211, 227, 227, 0.48)', '#3399CC', true);\n";
-    }
-
     private String insertGeoserverConfig() {
-        return "INSERT INTO geoservers (url,workspace,feature_ns,src_name,layers_primary_key) VALUES ('http://localhost:8080/geoserver','sabrine','urbupdate','EPSG:32632','ID');";
+        return "INSERT INTO geoservers (url,workspace,feature_ns,src_name,layers_primary_key) VALUES ('https://geoserver-tn.herokuapp.com','ihz','http://ihz','EPSG:32632','ID');";
     }
 
 }

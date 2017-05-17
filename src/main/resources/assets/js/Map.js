@@ -3,7 +3,7 @@ export class Map {
     constructor({
         layers = [],
         defaultLayer = '',
-        featureNS = 'urbupdate',
+        featureNS = 'featureNS',
         srsName = 'EPSG:32632',
         workspace = 'workspace',
         format = 'image/png',
@@ -336,7 +336,7 @@ export class Map {
             var storage = jQuery.localStorage;
             storage.set(key, 'checked');
             jQuery("#legende").append("" +
-                "<div style='flex-basis: 50%;display: flex;'>" +
+                "<div style='flex-basis: 15%;display: flex;'>" +
                 "<div style='background-color: " + _this.layers[key]['color'] + "' class='slideThree'>" +
                 "<input id='" + _this.layers[key]['name'] + "' type='checkbox' />" +
                 "<label for='" + _this.layers[key]['name'] + "'></label>" +

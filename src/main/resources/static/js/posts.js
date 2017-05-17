@@ -63,12 +63,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 189);
+/******/ 	return __webpack_require__(__webpack_require__.s = 194);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 134:
+/***/ 136:
 /***/ (function(module, exports) {
 
 var posts = new Vue({
@@ -114,10 +114,10 @@ var posts = new Vue({
 
 /***/ }),
 
-/***/ 189:
+/***/ 194:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(134);
+module.exports = __webpack_require__(136);
 
 
 /***/ })

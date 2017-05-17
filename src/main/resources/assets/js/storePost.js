@@ -31,6 +31,7 @@ const post = new Vue({
             uploadMultiple: true,
             parallelUploads: 100,
             maxFiles: 100,
+            dictDefaultMessage: 'Déposez vos fichiers ici',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },

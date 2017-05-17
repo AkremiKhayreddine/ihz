@@ -6,54 +6,36 @@
     <div class="container">
         <div class="row">
             <div class="col-md-3 widget">
-                <div class="admin-widget bg-blue">
+                <div class="admin-widget">
                     <i class="fa fa-edit"></i>
                     <span>10</span> Articles
                 </div>
             </div>
             <div class="col-md-3 widget">
-                <div class="admin-widget bg-red">
+                <div class="admin-widget">
                     <i class="fa fa-file"></i>
                     <span>10</span> Documents
                 </div>
             </div>
             <div class="col-md-3 widget">
-                <div class="admin-widget bg-green">
+                <div class="admin-widget">
                     <i class="fa fa-users"></i>
                     <span>10</span> Utilisateurs
                 </div>
             </div>
             <div class="col-md-3 widget">
-                <div class="admin-widget bg-black">
+                <div class="admin-widget">
                     <i class="fa fa-envelope"></i>
                     <span>10</span> Messages
                 </div>
             </div>
         </div>
-        <div id="users" class="row">
-            <div class="col-sm-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <div class="panel-title"> Gestion des utilisateurs</div>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <td>Nom</td>
-                                <td>E-mail</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="user in users">
-                                <td v-text="user.name"></td>
-                                <td v-text="user.email"></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="row">
+            <div th:replace="admin/fragments/layers :: layers"></div>
+        </div>
+        <div class="row">
+            <div th:replace="admin/fragments/users :: users"></div>
+            <div th:replace="admin/fragments/geoserver :: geoserver"></div>
         </div>
         <div id="messages" class="row">
             <div class="col-sm-12">
@@ -147,5 +129,7 @@
     <script type='text/javascript' th:src="@{/js/users.js}"></script>
     <script type='text/javascript' th:src="@{/js/messages.js}"></script>
     <script type='text/javascript' th:src="@{/js/statisticsdb.js}"></script>
+    <script type='text/javascript' th:src="@{/js/layers.js}"></script>
+    <script type='text/javascript' th:src="@{/js/geoserver.js}"></script>
 </th:block>
 </html>

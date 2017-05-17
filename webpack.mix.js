@@ -12,11 +12,14 @@ mix.js('src/main/resources/assets/js/app.js', 'src/main/resources/static/js')
     .js('src/main/resources/assets/js/sidebar.js', 'src/main/resources/static/js')
     .js('src/main/resources/assets/js/contact.js', 'src/main/resources/static/js')
     .js('src/main/resources/assets/js/messages.js', 'src/main/resources/static/js')
+    .js('src/main/resources/assets/js/layers.js', 'src/main/resources/static/js')
+    .js('src/main/resources/assets/js/geoserver.js', 'src/main/resources/static/js')
     .sass('src/main/resources/assets/sass/app.scss', 'src/main/resources/static/css');
 mix.styles([
     'src/main/resources/static/css/app.css',
     'node_modules/c3/c3.css',
     'node_modules/select2/dist/css/select2.css',
     'src/main/resources/static/css/font-awesome.css',
-    'node_modules/dropzone/dist/dropzone.css'
+    'node_modules/dropzone/dist/dropzone.css',
+    'node_modules/spectrum-colorpicker/spectrum.css',
 ], 'src/main/resources/static/css/all.css');

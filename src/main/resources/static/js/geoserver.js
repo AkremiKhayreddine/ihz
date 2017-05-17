@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 200);
+/******/ 	return __webpack_require__(__webpack_require__.s = 190);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -122,94 +122,54 @@ var Errors = function () {
 
 /***/ }),
 
-/***/ 142:
+/***/ 132:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(2);
-var _methods;
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-window.users = new Vue({
-    el: '#users',
+var geoserver = new Vue({
+    el: "#geoserver",
     data: {
-        users: [],
-        roles: [],
-        assignedRoles: [],
         form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
             model: {
-                name: '',
-                email: '',
-                password: '',
-                password_confirmation: ''
+                url: '',
+                workspace: '',
+                featureNs: '',
+                srcName: '',
+                layers_primary_key: ''
             }
         })
     },
-    methods: (_methods = {
-        getUsers: function getUsers() {
+    methods: {
+        getConfig: function getConfig() {
             var _this = this;
 
-            axios.get('/api/users').then(function (response) {
-                _this.users = response.data;
-                for (var item in _this.users) {
-                    if (_this.users[item].roles.length > 0) {
-                        var ob = {};
-                        for (var i in _this.users[item].roles) {
-                            ob[_this.users[item].roles[i].id] = _this.users[item].roles[i].name;
-                        }
-                        _this.users[item].roles = ob;
-                    }
-                }
+            axios.get('/admin/geoserver').then(function (response) {
+                _this.form.model = response.data;
             });
         },
-        addUser: function addUser() {
+        configure: function configure() {
             var _this2 = this;
 
-            this.form.post('/users').then(function (response) {
-                _this2.getUsers();
-                $('#addUser').modal('toggle');
-            });
-        },
-        getRoles: function getRoles() {
-            var _this3 = this;
-
-            axios.get('/api/roles').then(function (response) {
-                _this3.roles = response.data;
+            this.form.post('/admin/geoserver').then(function (response) {
+                _this2.form.model = response;
             });
         }
-    }, _defineProperty(_methods, 'addUser', function addUser() {
-        var _this4 = this;
-
-        this.form.post('/api/users').then(function (data) {
-            $('#closeUserModal').click();
-            _this4.getUsers();
-        });
-    }), _defineProperty(_methods, 'editUser', function editUser() {
-        var _this5 = this;
-
-        this.editForm.patch('/api/users/' + this.editForm.model.id).then(function (data) {
-            $('#closeEditModal').click();
-            _this5.getUsers();
-        });
-    }), _defineProperty(_methods, 'deleteUser', function deleteUser(userId) {
-        var _this6 = this;
-
-        axios.delete('/api/users/' + userId).then(function () {
-            _this6.getUsers();
-        });
-    }), _defineProperty(_methods, 'assignRole', function assignRole(user) {
-        axios.post('/api/users/' + user.id + '/assignRole', {
-            roles: user.roles
-        }).then(function (response) {});
-    }), _methods),
+    },
     mounted: function mounted() {
-        this.getUsers();
-        this.getRoles();
+        this.getConfig();
     }
 });
+
+/***/ }),
+
+/***/ 190:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(132);
+
 
 /***/ }),
 
@@ -297,14 +257,6 @@ var Form = function () {
 
     return Form;
 }();
-
-/***/ }),
-
-/***/ 200:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(142);
-
 
 /***/ })
 

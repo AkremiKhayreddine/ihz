@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 200);
+/******/ 	return __webpack_require__(__webpack_require__.s = 191);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -122,94 +122,116 @@ var Errors = function () {
 
 /***/ }),
 
-/***/ 142:
+/***/ 133:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(2);
-var _methods;
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-
-window.users = new Vue({
-    el: '#users',
+window.layers = new Vue({
+    el: '#layers',
     data: {
-        users: [],
-        roles: [],
-        assignedRoles: [],
+        auth: {},
+        layers: [],
+        zone: {},
         form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
             model: {
                 name: '',
-                email: '',
-                password: '',
-                password_confirmation: ''
+                color: '#000000',
+                stroke: '#000000',
+                active: false
             }
         })
     },
-    methods: (_methods = {
-        getUsers: function getUsers() {
+    methods: {
+        getAuth: function getAuth() {
             var _this = this;
-
-            axios.get('/api/users').then(function (response) {
-                _this.users = response.data;
-                for (var item in _this.users) {
-                    if (_this.users[item].roles.length > 0) {
-                        var ob = {};
-                        for (var i in _this.users[item].roles) {
-                            ob[_this.users[item].roles[i].id] = _this.users[item].roles[i].name;
-                        }
-                        _this.users[item].roles = ob;
+            return new Promise(function (resolve, reject) {
+                axios.get('/auth').then(function (response) {
+                    _this.auth = response.data;
+                    var roles = [];
+                    for (var role in _this.auth.roles) {
+                        roles.push(_this.auth.roles[role].id);
                     }
-                }
+                    for (var _role in _this.auth.roles) {
+                        _this.auth.permissions = _this.auth.roles[_role].permissions;
+                    }
+                    _this.auth.roles = roles;
+                    resolve();
+                });
             });
         },
-        addUser: function addUser() {
+        hasPermission: function hasPermission(permission) {
+            if (this.auth.permissions.hasOwnProperty(permission)) {
+                return this.auth.permissions[permission];
+            } else {
+                return false;
+            }
+        },
+        getLayers: function getLayers() {
             var _this2 = this;
 
-            this.form.post('/users').then(function (response) {
-                _this2.getUsers();
-                $('#addUser').modal('toggle');
+            axios.post('/map/getAllCouches').then(function (response) {
+                _this2.layers = response.data;
             });
         },
-        getRoles: function getRoles() {
-            var _this3 = this;
-
-            axios.get('/api/roles').then(function (response) {
-                _this3.roles = response.data;
+        deleteLayer: function deleteLayer(layerId) {
+            if (this.hasPermission('delete-layer')) {
+                axios.delete('/layers/' + layerId).then(function () {
+                    location.reload();
+                });
+            }
+        },
+        addLayer: function addLayer() {
+            this.form.post('/layers').then(function () {
+                location.reload();
+            });
+        },
+        uploadLayer: function uploadLayer() {
+            this.zone.processQueue();
+        },
+        updateActive: function updateActive(layer) {
+            var vm = this;
+            axios.patch('/layers/' + layer.id, layer).then(function () {
+                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
             });
         }
-    }, _defineProperty(_methods, 'addUser', function addUser() {
-        var _this4 = this;
-
-        this.form.post('/api/users').then(function (data) {
-            $('#closeUserModal').click();
-            _this4.getUsers();
-        });
-    }), _defineProperty(_methods, 'editUser', function editUser() {
-        var _this5 = this;
-
-        this.editForm.patch('/api/users/' + this.editForm.model.id).then(function (data) {
-            $('#closeEditModal').click();
-            _this5.getUsers();
-        });
-    }), _defineProperty(_methods, 'deleteUser', function deleteUser(userId) {
-        var _this6 = this;
-
-        axios.delete('/api/users/' + userId).then(function () {
-            _this6.getUsers();
-        });
-    }), _defineProperty(_methods, 'assignRole', function assignRole(user) {
-        axios.post('/api/users/' + user.id + '/assignRole', {
-            roles: user.roles
-        }).then(function (response) {});
-    }), _methods),
+    },
     mounted: function mounted() {
-        this.getUsers();
-        this.getRoles();
+        var _this3 = this;
+
+        Dropzone.autoDiscover = false;
+        this.zone = new Dropzone('#layersDropzone', {
+            url: "/admin/shapeFiles/upload",
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            maxFiles: 100,
+            dictDefaultMessage: 'Déposez vos fichiers ici',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            init: function init() {
+                // Set up any event handlers
+                this.on('completemultiple', function () {
+                    Event.$emit('alert', 'Succé');
+                });
+            }
+        });
+        this.getAuth().then(function () {
+            _this3.getLayers();
+        });
     }
 });
+
+/***/ }),
+
+/***/ 191:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(133);
+
 
 /***/ }),
 
@@ -297,14 +319,6 @@ var Form = function () {
 
     return Form;
 }();
-
-/***/ }),
-
-/***/ 200:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(142);
-
 
 /***/ })
 

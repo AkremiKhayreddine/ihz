@@ -7,10 +7,6 @@ window.carte = new Vue({
         showConfig: true,
         gMapCheckbox: true,
         positionCheckbox: false,
-        zone: {},
-        claim: {
-            id: 0
-        },
         geoserver: {},
         form: new Form({
             model: {
@@ -48,7 +44,7 @@ window.carte = new Vue({
         getAllCouches(){
             let vm = this;
             axios.post('/map/getAllCouches').then(function (response) {
-                axios.get('/map/getConfig').then(config => {
+                axios.get('/admin/geoserver').then(config => {
                     vm.geoserver = config.data;
                     const map = new Map({
                         layers: response.data,
@@ -67,50 +63,11 @@ window.carte = new Vue({
                     map.detectActionButton();
                 });
             });
-        },
-        saveClaim(){
-            this.form.post('/claims').then(response => {
-                this.claim = response;
-                this.zone.options.url = "/claims/" + this.claim.id + "/upload";
-                this.zone.processQueue();
-                this.getAllCouches();
-                $('#closeClaim').click();
-            });
-        },
-        validateFeature(feature){
-            axios.patch('/features/' + feature, {
-                status: 'validé'
-            }).then(response => {
-                this.getAllCouches();
-                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
-            });
-        },
-        cancelFeature(feature){
-            axios.patch('/features/' + feature, {
-                status: 'annulé'
-            }).then(response => {
-                this.getAllCouches();
-                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
-            });
         }
     },
     mounted(){
         this.getAuth().then(() => {
             this.getAllCouches();
-            console.log(this.isAdmin());
-        });
-        let vm = this;
-        Dropzone.autoDiscover = false;
-        this.zone = new Dropzone('#dzone', {
-            url: "/claims/" + vm.claim.id + "/upload",
-            autoProcessQueue: false,
-            uploadMultiple: true,
-            parallelUploads: 100,
-            maxFiles: 100,
-            dictDefaultMessage: 'Déposez vos photos ici',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
         });
     },
     watch: {

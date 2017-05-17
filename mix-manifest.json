@@ -5,6 +5,8 @@
   "/src/main/resources/static/js/users.js": "/src/main/resources/static/js/users.js",
   "/src/main/resources/static/js/storePost.js": "/src/main/resources/static/js/storePost.js",
   "/src/main/resources/static/js/statisticsdb.js": "/src/main/resources/static/js/statisticsdb.js",
+  "/src/main/resources/static/js/layers.js": "/src/main/resources/static/js/layers.js",
+  "/src/main/resources/static/js/geoserver.js": "/src/main/resources/static/js/geoserver.js",
   "/src/main/resources/static/js/editPost.js": "/src/main/resources/static/js/editPost.js",
   "/src/main/resources/static/js/contact.js": "/src/main/resources/static/js/contact.js",
   "/src/main/resources/static/js/statistics.js": "/src/main/resources/static/js/statistics.js",
