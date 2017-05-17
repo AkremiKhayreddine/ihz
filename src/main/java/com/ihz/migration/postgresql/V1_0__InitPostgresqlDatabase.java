@@ -34,6 +34,8 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
         jdbcTemplate.execute(createPostsTable());
         System.out.println("create documents table -------------------------------------------------------------------");
         jdbcTemplate.execute(createDocumentsTable());
+        System.out.println("create messages table -------------------------------------------------------------------");
+        jdbcTemplate.execute(createMessagesTable());
         System.out.println("create statistics table -------------------------------------------------------------------");
         jdbcTemplate.execute(createStatisticsTable());
         System.out.println("create Admin ----------------------------------------------------------------------------");
@@ -116,6 +118,16 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
                 + "  created_at timestamp,\n"
                 + "  updated_at timestamp,\n"
                 + "  CONSTRAINT FK_POST FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE\n"
+                + ");";
+    }
+
+    private String createMessagesTable() {
+        return "CREATE TABLE messages ( \n"
+                + "  id serial NOT NULL primary key, \n"
+                + "  from varchar(255) NOT NULL, \n"
+                + "  email varchar(255) NOT NULL, \n"
+                + "  phone varchar(255) NOT NULL, \n"
+                + "  content text NOT NULL \n"
                 + ");";
     }
 

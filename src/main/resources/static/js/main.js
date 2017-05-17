@@ -63,36 +63,147 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 171);
+/******/ 	return __webpack_require__(__webpack_require__.s = 187);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 131:
+/***/ 132:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Map__ = __webpack_require__(159);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Map__ = __webpack_require__(161);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Form__ = __webpack_require__(3);
 
-jQuery('#google-map-status').change(function () {
-    axios.post('getAllCouches').then(function (response) {
-        axios.get('admin/getConfig').then(function (config) {
-            var map = new __WEBPACK_IMPORTED_MODULE_0__Map__["a" /* Map */]({
-                layers: response.data,
-                defaultLayer: 'carte_geologique',
-                workspace: config.data.workspace,
-                srsName: config.data.srsName,
-                featureNS: config.data.featureNS,
-                btnSelect: $('#btnSelect'),
-                btnDelete: $('#btnDelete'),
-                btnDraw: $('#btnArea'),
-                google: jQuery('#google-map-status').is(':checked')
+
+window.carte = new Vue({
+    el: '#carte',
+    data: {
+        user: {},
+        showConfig: true,
+        gMapCheckbox: true,
+        positionCheckbox: false,
+        zone: {},
+        claim: {
+            id: 0
+        },
+        geoserver: {},
+        form: new __WEBPACK_IMPORTED_MODULE_1__Form__["a" /* Form */]({
+            model: {
+                title: '',
+                description: '',
+                lon: 0,
+                lat: 0,
+                feature: ''
+            }
+        })
+    },
+    methods: {
+        getAuth: function getAuth() {
+            var _this = this;
+            return new Promise(function (resolve, reject) {
+                axios.get('/auth').then(function (response) {
+                    _this.user = response.data;
+                    var roles = [];
+                    for (var role in _this.user.roles) {
+                        roles.push(_this.user.roles[role].id);
+                    }
+                    _this.user.roles = roles;
+                    resolve();
+                });
             });
-            var layersWFS_array = map.addLayersToMap();
-            map.detectActionButton();
+        },
+        isAdmin: function isAdmin() {
+            for (var role in this.user.roles) {
+                if (this.user.roles[role] == 1) {
+                    return true;
+                }
+                return false;
+            }
+        },
+        getAllCouches: function getAllCouches() {
+            var vm = this;
+            axios.post('/map/getAllCouches').then(function (response) {
+                axios.get('/map/getConfig').then(function (config) {
+                    vm.geoserver = config.data;
+                    var map = new __WEBPACK_IMPORTED_MODULE_0__Map__["a" /* Map */]({
+                        layers: response.data,
+                        defaultLayer: 'carte_geologique',
+                        workspace: config.data.workspace,
+                        srsName: config.data.srsName,
+                        featureNS: config.data.featureNS,
+                        url: config.data.url,
+                        btnSelect: $('#btnSelect'),
+                        btnDelete: $('#btnDelete'),
+                        btnDraw: $('#btnArea'),
+                        google: false,
+                        layers_primary_key: config.data.layers_primary_key
+                    });
+                    var layersWFS_array = map.addLayersToMap();
+                    map.detectActionButton();
+                });
+            });
+        },
+        saveClaim: function saveClaim() {
+            var _this2 = this;
+
+            this.form.post('/claims').then(function (response) {
+                _this2.claim = response;
+                _this2.zone.options.url = "/claims/" + _this2.claim.id + "/upload";
+                _this2.zone.processQueue();
+                _this2.getAllCouches();
+                $('#closeClaim').click();
+            });
+        },
+        validateFeature: function validateFeature(feature) {
+            var _this3 = this;
+
+            axios.patch('/features/' + feature, {
+                status: 'validé'
+            }).then(function (response) {
+                _this3.getAllCouches();
+                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
+            });
+        },
+        cancelFeature: function cancelFeature(feature) {
+            var _this4 = this;
+
+            axios.patch('/features/' + feature, {
+                status: 'annulé'
+            }).then(function (response) {
+                _this4.getAllCouches();
+                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
+            });
+        }
+    },
+    mounted: function mounted() {
+        var _this5 = this;
+
+        this.getAuth().then(function () {
+            _this5.getAllCouches();
+            console.log(_this5.isAdmin());
         });
-    });
+        var vm = this;
+        Dropzone.autoDiscover = false;
+        this.zone = new Dropzone('#dzone', {
+            url: "/claims/" + vm.claim.id + "/upload",
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 100,
+            maxFiles: 100,
+            dictDefaultMessage: 'Déposez vos photos ici',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    },
+
+    watch: {
+        gMapCheckbox: function gMapCheckbox(value) {
+            this.getAllCouches();
+        }
+    }
 });
 ol.Feature.prototype.getLayer = function (map) {
     var this_ = this,
@@ -129,49 +240,123 @@ ol.Feature.prototype.getLayer = function (map) {
     });
     return layer_;
 };
-var carte = new Vue({
-    el: '#carte',
-    data: {
-        showConfig: true,
-        gMapCheckbox: true,
-        positionCheckbox: false
-    },
-    methods: {
-        getAllCouches: function getAllCouches() {
-            var vm = this;
-            axios.post('getAllCouches').then(function (response) {
-                axios.get('admin/getConfig').then(function (config) {
-                    var map = new __WEBPACK_IMPORTED_MODULE_0__Map__["a" /* Map */]({
-                        layers: response.data,
-                        defaultLayer: 'carte_geologique',
-                        workspace: config.data.workspace,
-                        srsName: config.data.srsName,
-                        featureNS: config.data.featureNS,
-                        btnSelect: $('#btnSelect'),
-                        btnDelete: $('#btnDelete'),
-                        btnDraw: $('#btnArea'),
-                        google: vm.gMapCheckbox
-                    });
-                    var layersWFS_array = map.addLayersToMap();
-                    map.detectActionButton();
-                });
-            });
-        }
-    },
-    mounted: function mounted() {
-        this.getAllCouches();
-    },
+/**
+ * OpenLayers 3 Popup Overlay.
+ * See [the examples](./examples) for usage. Styling can be done via CSS.
+ * @constructor
+ * @extends {ol.Overlay}
+ * @param {Object} opt_options Overlay options
+ */
+ol.Overlay.Popup = function (opt_options) {
 
-    watch: {
-        gMapCheckbox: function gMapCheckbox() {
-            this.getAllCouches();
-        }
+    var options = opt_options || {};
+
+    if (options.autoPan === undefined) {
+        options.autoPan = true;
     }
-});
+
+    if (options.autoPanAnimation === undefined) {
+        options.autoPanAnimation = {
+            duration: 250
+        };
+    }
+
+    this.container = document.createElement('div');
+    this.container.className = 'ol-popup';
+
+    this.closer = document.createElement('a');
+    this.closer.className = 'ol-popup-closer';
+    this.closer.href = '#';
+    this.container.appendChild(this.closer);
+
+    var that = this;
+    this.closer.addEventListener('click', function (evt) {
+        that.container.style.display = 'none';
+        that.closer.blur();
+        evt.preventDefault();
+    }, false);
+
+    this.content = document.createElement('div');
+    this.content.className = 'ol-popup-content';
+    this.container.appendChild(this.content);
+
+    // Apply workaround to enable scrolling of content div on touch devices
+    ol.Overlay.Popup.enableTouchScroll_(this.content);
+
+    ol.Overlay.call(this, Object.assign(options, {
+        element: this.container
+    }));
+};
+
+ol.inherits(ol.Overlay.Popup, ol.Overlay);
+
+/**
+ * Show the popup.
+ * @param {ol.Coordinate} coord Where to anchor the popup.
+ * @param {String|HTMLElement} html String or element of HTML to display within the popup.
+ */
+ol.Overlay.Popup.prototype.show = function (coord, html) {
+    if (html instanceof HTMLElement) {
+        this.content.innerHTML = "";
+        this.content.appendChild(html);
+    } else {
+        this.content.innerHTML = html;
+    }
+    this.container.style.display = 'block';
+    this.content.scrollTop = 0;
+    this.setPosition(coord);
+    return this;
+};
+
+/**
+ * @private
+ * @desc Determine if the current browser supports touch events. Adapted from
+ * https://gist.github.com/chrismbarr/4107472
+ */
+ol.Overlay.Popup.isTouchDevice_ = function () {
+    try {
+        document.createEvent("TouchEvent");
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+/**
+ * @private
+ * @desc Apply workaround to enable scrolling of overflowing content within an
+ * element. Adapted from https://gist.github.com/chrismbarr/4107472
+ */
+ol.Overlay.Popup.enableTouchScroll_ = function (elm) {
+    if (ol.Overlay.Popup.isTouchDevice_()) {
+        var scrollStartPos = 0;
+        elm.addEventListener("touchstart", function (event) {
+            scrollStartPos = this.scrollTop + event.touches[0].pageY;
+        }, false);
+        elm.addEventListener("touchmove", function (event) {
+            this.scrollTop = scrollStartPos - event.touches[0].pageY;
+        }, false);
+    }
+};
+
+/**
+ * Hide the popup.
+ */
+ol.Overlay.Popup.prototype.hide = function () {
+    this.container.style.display = 'none';
+    return this;
+};
+
+/**
+ * Indicates if the popup is in open state
+ */
+ol.Overlay.Popup.prototype.isOpened = function () {
+    return this.container.style.display == 'block';
+};
 
 /***/ }),
 
-/***/ 158:
+/***/ 160:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -254,11 +439,11 @@ var FormBuilder = function () {
 
 /***/ }),
 
-/***/ 159:
+/***/ 161:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__FormBuilder__ = __webpack_require__(158);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__FormBuilder__ = __webpack_require__(160);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Map; });
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -273,9 +458,9 @@ var Map = function () {
             _ref$defaultLayer = _ref.defaultLayer,
             defaultLayer = _ref$defaultLayer === undefined ? '' : _ref$defaultLayer,
             _ref$featureNS = _ref.featureNS,
-            featureNS = _ref$featureNS === undefined ? 'pfe' : _ref$featureNS,
+            featureNS = _ref$featureNS === undefined ? 'urbupdate' : _ref$featureNS,
             _ref$srsName = _ref.srsName,
-            srsName = _ref$srsName === undefined ? 'EPSG:22332' : _ref$srsName,
+            srsName = _ref$srsName === undefined ? 'EPSG:32632' : _ref$srsName,
             _ref$workspace = _ref.workspace,
             workspace = _ref$workspace === undefined ? 'workspace' : _ref$workspace,
             _ref$format = _ref.format,
@@ -289,11 +474,17 @@ var Map = function () {
             _ref$btnDraw = _ref.btnDraw,
             btnDraw = _ref$btnDraw === undefined ? {} : _ref$btnDraw,
             _ref$google = _ref.google,
-            google = _ref$google === undefined ? false : _ref$google;
+            google = _ref$google === undefined ? false : _ref$google,
+            _ref$bing = _ref.bing,
+            bing = _ref$bing === undefined ? true : _ref$bing,
+            _ref$layers_primary_k = _ref.layers_primary_key,
+            layers_primary_key = _ref$layers_primary_k === undefined ? 'ID' : _ref$layers_primary_k;
 
         _classCallCheck(this, Map);
 
+        this.bing = bing;
         this.layers = layers;
+        this.layers_primary_key = layers_primary_key;
         this.defaultLayer = defaultLayer;
         this.featureNS = featureNS;
         this.srsName = srsName;
@@ -325,6 +516,8 @@ var Map = function () {
         this.interactionDelete = new ol.interaction.Select();
         this.projection = {};
         this.google = google;
+        this.perimetreArray = [];
+        this.perimetre = 0;
     }
 
     _createClass(Map, [{
@@ -342,6 +535,7 @@ var Map = function () {
                 projection: projection,
                 Zoom: 21
             });
+
             if (this.google) {
                 jQuery('#map').html('<div id="olmap" class="fill"></div><div id="gmap" class="fill"></div>');
                 this.map = new ol.Map({
@@ -380,6 +574,30 @@ var Map = function () {
                 var olMapDiv = document.getElementById('olmap');
                 olMapDiv.parentNode.removeChild(olMapDiv);
                 gmap.controls[google.maps.ControlPosition.TOP_LEFT].push(olMapDiv);
+            } else if (this.bing) {
+                var l = new ol.layer.Tile({
+                    visible: true,
+                    preload: Infinity,
+                    source: new ol.source.BingMaps({
+                        key: 'AuGIRikTzpl0eFlAU2U0SIxTpeFtXwzvWjUhWgmzNEHFNvTF_w-MkGW7l1bhMuGn',
+                        imagerySet: 'AerialWithLabels'
+                    })
+                });
+                this.map = new ol.Map({
+                    interactions: ol.interaction.defaults({
+                        altShiftDragRotate: false,
+                        dragPan: false,
+                        rotate: false
+                    }).extend([new ol.interaction.DragPan({ kinetic: null })]),
+                    controls: ol.control.defaults({
+                        zoom: true,
+                        attribution: false
+                    }).extend([mousePositionControl]),
+                    layers: [l],
+                    loadTilesWhileInteracting: true,
+                    target: 'map',
+                    view: view
+                });
             } else {
                 jQuery('#map').html('<div id="olmap" class="fill"></div>');
                 this.map = new ol.Map({
@@ -411,7 +629,7 @@ var Map = function () {
         key: 'getProjection',
         value: function getProjection() {
             var _this = this;
-            if (this.google) {
+            if (this.google || this.bing) {
                 proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
                 proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
                 return new ol.proj.Projection({
@@ -488,53 +706,44 @@ var Map = function () {
             var _this = this;
             var projection = _this.getProjection();
             var sourceWFS = void 0;
-            if (this.google) {
-                sourceWFS = new ol.source.Vector({
-                    loader: function loader(extent, resolution, projection) {
-                        jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
-                            type: 'GET',
-                            data: {
-                                service: 'WFS',
-                                version: '2.0.0',
-                                outputFormat: 'application/json',
-                                request: 'GetFeature',
-                                typename: _this.workspace + ':' + layerName,
-                                srsname: 'EPSG:3857',
-                                bbox: extent.join(',') + ',' + _this.srsName
+            var claims = [];
+            sourceWFS = new ol.source.Vector({
+                loader: function loader(extent, resolution, projection) {
+                    jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
+                        type: 'GET',
+                        data: {
+                            service: 'WFS',
+                            version: '2.0.0',
+                            outputFormat: 'application/json',
+                            request: 'GetFeature',
+                            typename: _this.workspace + ':' + layerName,
+                            srsname: _this.srsName,
+                            bbox: extent.join(',')
+                        },
+                        error: function error(xhr, ajaxOptions, thrownError) {
+                            if (xhr.status == 404) {
+                                Event.$emit('alert', thrownError);
                             }
-                        }).done(function (response) {
-                            sourceWFS.addFeatures(_this.formatGeoJSON_array[layerName].readFeatures(response));
-                        }).fail(function () {
-                            alert("error loading vector layer");
-                        });
-                    },
-                    strategy: ol.loadingstrategy.bbox,
-                    projection: _this.getProjection()
-                });
-            } else {
-                sourceWFS = new ol.source.Vector({
-                    loader: function loader(extent, resolution, projection) {
-                        jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
-                            type: 'GET',
-                            data: {
-                                service: 'WFS',
-                                version: '2.0.0',
-                                outputFormat: 'application/json',
-                                request: 'GetFeature',
-                                typename: _this.workspace + ':' + layerName,
-                                srsname: _this.srsName,
-                                bbox: extent.join(',') + ',' + _this.srsName
+                        },
+                        success: function success(response) {
+                            var features = [];
+                            if (_this.google || _this.bing) {
+                                features = _this.formatGeoJSON_array[layerName].readFeatures(response, {
+                                    dataProjection: _this.srsName,
+                                    featureProjection: 'EPSG:3857'
+                                });
+                            } else {
+                                features = _this.formatGeoJSON_array[layerName].readFeatures(response);
                             }
-                        }).done(function (response) {
-                            sourceWFS.addFeatures(_this.formatGeoJSON_array[layerName].readFeatures(response));
-                        }).fail(function () {
-                            alert("error loading vector layer");
-                        });
-                    },
-                    strategy: ol.loadingstrategy.bbox,
-                    projection: _this.getProjection()
-                });
-            }
+                            sourceWFS.addFeatures(features);
+                        }
+                    });
+                },
+
+                strategy: ol.loadingstrategy.bbox,
+
+                projection: 'EPSG:3857'
+            });
             return sourceWFS;
         }
     }, {
@@ -552,7 +761,7 @@ var Map = function () {
         value: function addFormatGML() {
             var _this = this;
             jQuery.each(_this.layers, function (key, value) {
-                if (_this.layers[key]['status'] === 'active') {
+                if (_this.layers[key]['active']) {
                     _this.formatGML_array[_this.layers[key]['name']] = _this.createFormatGML(_this.layers[key]['name']);
                 }
             });
@@ -562,7 +771,7 @@ var Map = function () {
         value: function addFormatWFS() {
             var _this = this;
             jQuery.each(_this.layers, function (key, value) {
-                if (_this.layers[key]['status'] === 'active') {
+                if (_this.layers[key]['active']) {
                     _this.formatWFS_array[_this.layers[key]['name']] = _this.createFormatWFS(_this.layers[key]['name']);
                 }
             });
@@ -573,7 +782,7 @@ var Map = function () {
             var imageWMS_array = {};
             var _this = this;
             jQuery.each(_this.layers, function (key, value) {
-                if (_this.layers[key]['status'] === 'active') {
+                if (_this.layers[key]['active']) {
                     imageWMS_array[_this.layers[key]['name']] = _this.createImageWMS(_this.layers[key]['name']);
                 }
             });
@@ -591,8 +800,7 @@ var Map = function () {
                 _this.sourceWFS_array[_this.layers[key]['name']] = _this.createSourceWFS(_this.layers[key]['name']);
                 _this.layersWFS_array[_this.layers[key]['name']] = _this.createLayerWFS(_this.layers[key]['name']);
                 _this.map.addLayer(_this.layersWFS_array[_this.layers[key]['name']]);
-                if (_this.google) {
-                    console.log('with googoe');
+                if (_this.google || _this.bing) {
                     _this.map.getView().fit(ol.proj.transformExtent(_this.bounds, _this.srsName, 'EPSG:3857'), _this.map.getSize());
                     _this.map.getView().setZoom(7);
                 } else {
@@ -600,7 +808,7 @@ var Map = function () {
                 }
                 var storage = jQuery.localStorage;
                 storage.set(key, 'checked');
-                jQuery("#legende").append("<div class='col-md-6 col-sm-12 col-xs-12'><div style='float:left;' class='squaredThree'>" + "<input onclick=\"mapRelaod('" + _this.layers[key]['name'] + "')\" type='checkbox' value='" + _this.layers[key]['name'] + "' id='" + _this.layers[key]['name'] + "' name='" + _this.layers[key]['name'] + "' " + storage.get(key) + " />" + "<label for='" + _this.layers[key]['name'] + "'></label></div><div style='width:25px;height:25px;background-color:" + _this.layers[key]['color'] + ";margin:10px;margin-top:7px;float:left'></div><p style='float:left'>" + _this.layers[key]['name'] + "</p></div>");
+                jQuery("#legende").append("" + "<div style='flex-basis: 50%;display: flex;'>" + "<div style='background-color: " + _this.layers[key]['color'] + "' class='slideThree'>" + "<input id='" + _this.layers[key]['name'] + "' type='checkbox' />" + "<label for='" + _this.layers[key]['name'] + "'></label>" + "</div>" + "<p style='margin-left: 5px'>" + _this.layers[key]['name'] + "</p>" + "</div>");
             });
             return _this.layersWFS_array;
         }
@@ -623,7 +831,7 @@ var Map = function () {
         value: function getActiveLayers(layers) {
             var active_layers_array = {};
             jQuery.each(layers, function (key, value) {
-                if (layers[key]['status'] === 'active') {
+                if (layers[key]['active']) {
                     active_layers_array[key] = layers[key]['name'];
                 }
             });
@@ -653,7 +861,7 @@ var Map = function () {
                     var coord = ol.proj.transform(oo, 'EPSG:3857', 'EPSG:4326');
                     var lon = coord[0];
                     var lat = coord[1];
-                    console.log(evt.selected[0].getId());
+
                     if (url) {
                         jQuery.ajax({
                             url: url,
@@ -662,19 +870,24 @@ var Map = function () {
                             var feature = response.features[0];
                             if (feature !== undefined) {
                                 var props = feature.properties;
-                                mail += '<h2 style="font-size:14px;color:#777777;display:inline;margin-bottom:15px;font-weight:bold;padding-bottom:5px">' + key + '</h2><table border="0" style="color:#777777;font-size:12px;line-height: 200%;border: 1px solid #e4e7ea;border-radius: 2px;width:100%">';
-                                info += '<h2 style="font-size:14px;color:#FFFFFF;display:inline;margin-bottom:15px;font-weight:bold;border-bottom:1px solid #FFFFFF">' + key + '</h2><table border="0" style="color:#ffffff;border: none;line-height:30px;padding:10px;font-size:13px">';
+                                info += '<h2 style="font-size:14px;color:#FFFFFF;display:inline;margin-bottom:15px;font-weight:bold;border-bottom:1px solid #FFFFFF">' + key + '</h2><div style="color:#ffffff;border: none;line-height:30px;padding:10px;font-size:13px">';
                                 jQuery.each(props, function (key, value) {
-                                    mail += '<tr><td style="border:none;padding:5px;">' + key + ':</td><td style="border:none;padding:5px;">' + value + '</td></tr>';
-                                    info += '<tr><td style="border:none;">' + key + ':</td><td style="border:none;">' + value + '</td></tr>';
+                                    info += '<div class="col-md-4">' + key + ':</div><div class="col-md-8">' + value + '</div>';
                                 });
-                                mail += '</table>';
-                                info += '</table>';
-                                jQuery("#infosPopup").show();
-                                jQuery("#infosPopup-bottom").show();
-                                //document.getElementById('nodelist').innerHTML = table;
-                                document.getElementById('mailContent').innerHTML = mail;
-                                document.getElementById('infosPopupCont').innerHTML = info;
+                                axios.get('/features/' + evt.selected[0].get(_this.layers_primary_key)).then(function (response) {
+                                    info += '<div class="col-md-12 alert alert-danger">' + '<ul style="list-style: none;margin: 0;padding: 0">' + '<li>' + response.data.claim.title + '</li>' + '<li>' + response.data.claim.description + '</li>' + '</ul></div>';
+                                    info += '</div>';
+                                    jQuery("#infosPopup").show();
+                                    jQuery("#infosPopup-bottom").show();
+                                    document.getElementById('infosPopupCont').innerHTML = info;
+                                }).catch(function (error) {
+                                    info += '</div>';
+                                    jQuery("#infosPopup").show();
+                                    jQuery("#infosPopup-bottom").show();
+                                    //document.getElementById('nodelist').innerHTML = table;
+                                    document.getElementById('mailContent').innerHTML = mail;
+                                    document.getElementById('infosPopupCont').innerHTML = info;
+                                });
                             }
                         });
                     }
@@ -686,6 +899,8 @@ var Map = function () {
         key: 'deleteAction',
         value: function deleteAction() {
             var _this = this;
+            _this.addFormatWFS();
+            _this.addFormatGML();
             _this.btnDelete.parent().find('.btn').each(function (index, element) {
                 jQuery(this).removeClass('active');
             });
@@ -702,6 +917,7 @@ var Map = function () {
                     contentType: 'text/xml',
                     data: s.serializeToString(_this.formatWFS_array[layerSelected.get('name')].writeTransaction(null, null, [e.target.item(0)], _this.formatGML_array[layerSelected.get('name')])),
                     success: function success(data) {
+                        Event.$emit('alert', 'Votre modification a été enregistré avec succé');
                         _this.layersWFS_array[layerSelected.get('name')].getSource().clear();
                         _this.interactionDelete.getFeatures().clear();
                         _this.map.removeInteraction(_this.interactionDelete);
@@ -720,12 +936,23 @@ var Map = function () {
             this.map.removeInteraction(this.interactionSelect);
             this.map.removeInteraction(this.interactionDelete);
             var interactionDraw = this.getDraw();
+            interactionDraw.on('drawstart', function (e) {
+                _this.perimetreArray = [];
+                _this.map.on('singleclick', function (evt) {
+                    var sourceProj = _this.map.getView().getProjection();
+                    _this.perimetreArray.push(ol.proj.transform(evt.coordinate, sourceProj, 'EPSG:4326'));
+                });
+            });
             interactionDraw.on('drawend', function (e) {
+                _this.map.removeInteraction(interactionDraw);
                 proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
                 proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
                 var aa = e.feature.getGeometry().getExtent();
                 var oo = ol.extent.getCenter(aa);
                 var newFeature = _this.transform_geometry(e.feature);
+                var coord = ol.proj.transform(oo, 'EPSG:3857', 'EPSG:4326');
+                var lon = coord[0];
+                var lat = coord[1];
                 var props;
                 jQuery("#sendMailNewData").click();
                 _this.addFormatWFS();
@@ -733,10 +960,23 @@ var Map = function () {
                 var form = new __WEBPACK_IMPORTED_MODULE_0__FormBuilder__["a" /* FormBuilder */]();
                 form.init('POST', _this.getActiveLayers(_this.layers));
                 jQuery('#select_layer').change(function () {
-                    props = form.create(jQuery('#select_layer').val(), _this.layersWFS_array);
+                    var array = _this.layersWFS_array[jQuery('#select_layer').val()].getSource().getFeatures().sort(function (a, b) {
+                        return a.get(_this.layers_primary_key) - b.get(_this.layers_primary_key);
+                    });
+                    var fid = _this.layersWFS_array[jQuery('#select_layer').val()].getSource().getFeatures().length;
+                    console.log(array[0].get(_this.layers_primary_key));
+                    console.log(array[fid - 2].get(_this.layers_primary_key));
+                    console.log(array[fid - 1].get(_this.layers_primary_key));
+                    newFeature.setId(array[fid - 1].get(_this.layers_primary_key) + 1);
+                    props = form.create(jQuery('#select_layer').val(), _this.layersWFS_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry()), _this.layers_primary_key, newFeature.getId());
                 });
                 jQuery("#saveFeature").click(function () {
-                    form.submit(jQuery('#select_layer').val(), props, newFeature, _this.formatWFS_array, _this.formatGML_array);
+                    form.submit(jQuery('#select_layer').val(), props, newFeature, _this.formatWFS_array, _this.formatGML_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry())).then(function (response) {
+                        carte.form.model.lon = lon;
+                        carte.form.model.lat = lat;
+                        carte.form.model.feature = response;
+                        $('#addClaim').click();
+                    });
                 });
             });
             this.map.addInteraction(interactionDraw);
@@ -744,15 +984,53 @@ var Map = function () {
     }, {
         key: 'transform_geometry',
         value: function transform_geometry(element) {
+            // var sourceProj = this.map.getView().getProjection();
+            // console.log(sourceProj);
+            proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
+            // console.log(element.getGeometry().getCoordinates());
+            // let newFeature = element.clone();
+            // newFeature.getGeometry().transform(sourceProj,"EPSG:32632");
             var newFeature = element.clone();
             var polyCoords = [];
             var coords = element.getGeometry().getCoordinates();
+            console.log(coords);
             for (var i in coords[0][0]) {
                 var c = coords[0][0][i];
                 polyCoords.push(ol.proj.transform([parseFloat(c[0]), parseFloat(c[1])], 'EPSG:3857', 'EPSG:32632'));
             }
             newFeature.getGeometry().setCoordinates([[polyCoords]]);
+            console.log(newFeature.getGeometry().getCoordinates());
             return newFeature;
+        }
+    }, {
+        key: 'formatArea',
+        value: function formatArea(polygon) {
+            var area;
+            //does'it work because our geom is Multipolygon and we need Polygon
+            //  var wgs84Sphere = new ol.Sphere(6378137);
+            //  var sourceProj = this.map.getView().getProjection();
+            //  var geom = (polygon.clone().transform(sourceProj, 'EPSG:4326'));
+            //  var polygon = new ol.geom.Polygon(geom.getCoordinates());
+            //  var coordinates = geom.getLinearRing(0).getCoordinates();
+            // area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
+            area = polygon.getArea();
+            var output;
+            output = Math.round(area * 100) / 100;
+            return output;
+        }
+    }, {
+        key: 'formatPerimetre',
+        value: function formatPerimetre(polygon) {
+            var sourceProj = this.map.getView().getProjection();
+            this.perimetre = 0;
+            var wgs84Sphere = new ol.Sphere(6378137);
+            var lastPoint = ol.proj.transform(polygon.clone().getLastCoordinate(), sourceProj, 'EPSG:4326');
+            this.perimetreArray.push(lastPoint);
+            for (var i = 0, ii = this.perimetreArray.length - 1; i < ii; ++i) {
+                this.perimetre += wgs84Sphere.haversineDistance(this.perimetreArray[i], this.perimetreArray[i + 1]);
+            }
+            this.perimetre = Math.round(this.perimetre * 100) / 100;
+            return this.perimetre;
         }
     }]);
 
@@ -761,11 +1039,152 @@ var Map = function () {
 
 /***/ }),
 
-/***/ 171:
+/***/ 187:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(131);
+module.exports = __webpack_require__(132);
 
+
+/***/ }),
+
+/***/ 2:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Errors; });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Errors = function () {
+    function Errors() {
+        _classCallCheck(this, Errors);
+
+        this.errors = {};
+    }
+
+    _createClass(Errors, [{
+        key: "record",
+        value: function record(errors) {
+            this.errors = errors;
+        }
+    }, {
+        key: "has",
+        value: function has(field) {
+            return this.errors.hasOwnProperty(field);
+        }
+    }, {
+        key: "any",
+        value: function any() {
+            return Object.keys(this.errors).length > 0;
+        }
+    }, {
+        key: "get",
+        value: function get(field) {
+            if (this.errors[field]) {
+                return this.errors[field][0];
+            }
+        }
+    }, {
+        key: "clear",
+        value: function clear(field) {
+            if (field) {
+                delete this.errors[field];
+            } else {
+                this.errors = {};
+            }
+        }
+    }]);
+
+    return Errors;
+}();
+
+/***/ }),
+
+/***/ 3:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Errors__ = __webpack_require__(2);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Form; });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+
+var Form = function () {
+    function Form(data) {
+        _classCallCheck(this, Form);
+
+        this.model = {};
+        this.originalData = data;
+        for (var field in data.model) {
+            this.model[field] = data.model[field];
+        }
+        this.errors = new __WEBPACK_IMPORTED_MODULE_0__Errors__["a" /* Errors */]();
+    }
+
+    _createClass(Form, [{
+        key: 'reset',
+        value: function reset() {
+            for (var field in this.originalData.model) {
+                this.model[field] = '';
+            }
+            this.errors.clear();
+        }
+    }, {
+        key: 'data',
+        value: function data() {
+            var data = {};
+            for (var property in this.model) {
+                data[property] = this.model[property];
+            }
+            return data;
+        }
+    }, {
+        key: 'submit',
+        value: function submit(requestType, url) {
+            var _this = this;
+
+            return new Promise(function (resolve, reject) {
+                axios[requestType](url, _this.data()).then(function (response) {
+                    _this.onSuccess(response.data);
+                    resolve(response.data);
+                }).catch(function (error) {
+                    _this.onFail(error.response.data);
+                    reject(error.response.data);
+                });
+            });
+        }
+    }, {
+        key: 'onSuccess',
+        value: function onSuccess(response) {
+            this.reset();
+        }
+    }, {
+        key: 'post',
+        value: function post(url) {
+            return this.submit('post', url);
+        }
+    }, {
+        key: 'delete',
+        value: function _delete(url) {
+            return this.submit('delete', url);
+        }
+    }, {
+        key: 'patch',
+        value: function patch(url) {
+            return this.submit('patch', url);
+        }
+    }, {
+        key: 'onFail',
+        value: function onFail(errors) {
+            this.errors.record(errors);
+        }
+    }]);
+
+    return Form;
+}();
 
 /***/ })
 

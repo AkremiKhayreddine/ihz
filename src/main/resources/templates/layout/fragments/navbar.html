@@ -40,15 +40,23 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a th:href="@{/}"><i class="fa fa-home"></i> Accueil</a></li>
-                    <li><a th:href="@{/layers}"><i class="fa fa-map"></i> Cartographie</a></li>
+                    <li><a th:href="@{/map}"><i class="fa fa-map"></i> Cartographie</a></li>
                     <li><a th:href="@{/posts}"><i class="fa fa-edit"></i> Documents</a></li>
-                    <li><a th:href="@{/statistics}"><i class="fa fa-line-chart"></i> Suivi qualitatif des nappes</a>
-                    </li>
-                    <li><a th:href="@{/quantitatif}"><i class="fa fa-bar-chart"></i>Suivi quantitatif des nappes</a>
+                    <li class="dropdown dropdown-hover">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><i class="fa fa-bar-chart"></i>Statistics</a>
+                        <ul class="dropdown-menu">
+                            <li><a th:href="@{/statistics}">Suivi qualitatif des nappes</a>
+                            </li>
+                            <li><a th:href="@{/quantitatif}">Suivi quantitatif des nappes</a>
+                            </li>
+                        </ul>
                     </li>
                     <li><a th:href="@{/contact}"><i class="fa fa-envelope"></i> Contacts</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}"><i class="fa fa-sign-in"></i> Se connecter</a>
+                    </li>
                     <li sec:authorize="isAuthenticated()" class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">
@@ -71,8 +79,6 @@
                                 </form>
                             </li>
                         </ul>
-                    </li>
-                    <li sec:authorize="isAnonymous()"><a th:href="@{/login}"><i class="fa fa-sign-in"></i> Se connecter</a>
                     </li>
                 </ul>
 

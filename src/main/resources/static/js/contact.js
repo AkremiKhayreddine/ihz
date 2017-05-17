@@ -63,78 +63,43 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 195);
+/******/ 	return __webpack_require__(__webpack_require__.s = 185);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 140:
+/***/ 130:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Form__ = __webpack_require__(3);
 
-window.users = new Vue({
-    el: '#users',
+var contact = new Vue({
+    el: '#contact',
     data: {
-        users: [],
-        roles: [],
-        assignedRoles: [],
         form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
             model: {
-                name: '',
-                email: '',
-                password: '',
-                password_confirmation: ''
+                from_name: '',
+                from_email: '',
+                phone: '',
+                content: ''
             }
         })
     },
     methods: {
-        getUsers: function getUsers() {
-            var _this = this;
-
-            axios.get('/api/users').then(function (response) {
-                _this.users = response.data;
-                for (var item in _this.users) {
-                    if (_this.users[item].roles.length > 0) {
-                        var ob = {};
-                        for (var i in _this.users[item].roles) {
-                            ob[_this.users[item].roles[i].id] = _this.users[item].roles[i].name;
-                        }
-                        _this.users[item].roles = ob;
-                    }
-                }
-            });
-        },
-        addUser: function addUser() {
-            var _this2 = this;
-
-            this.form.post('/users').then(function (response) {
-                _this2.getUsers();
-                $('#addUser').modal('toggle');
-            });
-        },
-        getRoles: function getRoles() {
-            var _this3 = this;
-
-            axios.get('/api/roles').then(function (response) {
-                _this3.roles = response.data;
-            });
+        sendMessage: function sendMessage() {
+            this.form.post('/contact');
         }
-    },
-    mounted: function mounted() {
-        this.getUsers();
-        this.getRoles();
     }
 });
 
 /***/ }),
 
-/***/ 195:
+/***/ 185:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(140);
+module.exports = __webpack_require__(130);
 
 
 /***/ }),

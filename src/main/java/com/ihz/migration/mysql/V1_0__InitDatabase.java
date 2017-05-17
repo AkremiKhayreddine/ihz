@@ -30,6 +30,8 @@ public class V1_0__InitDatabase implements SpringJdbcMigration {
         jdbcTemplate.execute(createPostsTable());
         System.out.println("create documents table -------------------------------------------------------------------");
         jdbcTemplate.execute(createDocumentsTable());
+        System.out.println("create messages table -------------------------------------------------------------------");
+        jdbcTemplate.execute(createMessagesTable());
         System.out.println("create statistics table -------------------------------------------------------------------");
         jdbcTemplate.execute(createStatisticsTable());
         System.out.println("create Admin ----------------------------------------------------------------------------");
@@ -135,6 +137,17 @@ public class V1_0__InitDatabase implements SpringJdbcMigration {
                 + ");";
     }
 
+    private String createMessagesTable() {
+        return "CREATE TABLE messages ( \n"
+                + "  id int(11) NOT NULL AUTO_INCREMENT, \n"
+                + "  from_name varchar(255) NOT NULL, \n"
+                + "  from_email varchar(255) NOT NULL, \n"
+                + "  phone varchar(255) NOT NULL, \n"
+                + "  content text NOT NULL, \n"
+                + "  PRIMARY KEY (id)\n"
+                + ");";
+    }
+
     private String createRolesTable() {
         return "create table roles(\n"
                 + "   id BIGINT NOT NULL AUTO_INCREMENT,\n"
@@ -176,13 +189,11 @@ public class V1_0__InitDatabase implements SpringJdbcMigration {
 
     private String createCouches() {
         return "INSERT INTO layers (id, name, color, stroke, active) VALUES\n"
-                + "(1, 'Fouchana', 'rgba(30, 102, 223, 0.45)', 'rgb(255, 0, 0)', 0),\n"
-                + "(2, 'Mhamdia', 'rgba(211, 227, 227, 0.45)', '#3399CC', 0),\n"
-                + "(3, 'batdf_Project2_Clip', 'rgba(211, 227, 227, 0.48)', '#3399CC', 1);\n";
+                + "(1, 'carte_geologique', 'rgba(30, 102, 223, 0.45)', 'rgb(255, 0, 0)', 0);";
     }
 
     private String insertGeoserverConfig() {
-        return "INSERT INTO geoservers (url,workspace,feature_ns,src_name,layers_primary_key) VALUES ('http://localhost:8080/geoserver','sabrine','urbupdate','EPSG:32632','ID');";
+        return "INSERT INTO geoservers (url,workspace,feature_ns,src_name,layers_primary_key) VALUES ('http://localhost:8080/geoserver','samar','ihz','EPSG:32632','ID');";
     }
 
 }

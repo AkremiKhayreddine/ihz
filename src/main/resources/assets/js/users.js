@@ -1,5 +1,5 @@
 import {Form} from "./Form";
-const users = new Vue({
+window.users = new Vue({
     el: '#users',
     data: {
         users: [],
@@ -36,7 +36,7 @@ const users = new Vue({
             });
         },
         getRoles(){
-            axios.get('api/roles').then(response=> {
+            axios.get('/api/roles').then(response => {
                 this.roles = response.data;
             });
         },

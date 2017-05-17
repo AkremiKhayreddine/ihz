@@ -63,42 +63,39 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 191);
+/******/ 	return __webpack_require__(__webpack_require__.s = 188);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 136:
+/***/ 133:
 /***/ (function(module, exports) {
 
-var sidebar = new Vue({
-    el: "#sidebar",
+window.messages = new Vue({
+    el: "#messages",
     data: {
-        latests: []
+        messages: []
     },
     methods: {
-        getLatests: function getLatests() {
+        getMessages: function getMessages() {
             var _this = this;
 
-            axios.get("/api/posts/latests").then(function (response) {
-                _this.latests = response.data;
-                for (var i in _this.latests) {
-                    _this.latests[i].updated_at = moment(_this.latests[i].updated_at).from(moment());
-                }
+            axios.get('/api/messages').then(function (response) {
+                _this.messages = response.data;
             });
         }
     },
     mounted: function mounted() {
-        this.getLatests();
+        this.getMessages();
     }
 });
 
 /***/ }),
 
-/***/ 191:
+/***/ 188:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(136);
+module.exports = __webpack_require__(133);
 
 
 /***/ })

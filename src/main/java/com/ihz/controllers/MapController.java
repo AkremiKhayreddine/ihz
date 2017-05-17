@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 
 @Controller
+@RequestMapping("/map")
 public class MapController {
 
     @Autowired
@@ -20,7 +21,7 @@ public class MapController {
     @Autowired
     private GeoserverRepository geoserverRepository;
 
-    @RequestMapping("/map")
+    @RequestMapping("")
     public String index() {
         return "map";
     }
@@ -31,7 +32,7 @@ public class MapController {
         return layersRepository.findAll();
     }
 
-    @RequestMapping("/admin/getConfig")
+    @RequestMapping("/getConfig")
     @ResponseBody
     public Geoserver getConfig() {
         return geoserverRepository.findOne(1);

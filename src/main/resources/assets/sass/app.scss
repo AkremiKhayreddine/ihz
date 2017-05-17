@@ -1,8 +1,5 @@
-// Fonts
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);
 // Variables
 @import "variables";
-
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 @import "navbar";
@@ -664,6 +661,42 @@ ul.contact-get-in-touch {
   color: white !important;
   i {
     margin-right: 5px;
+  }
+}
+
+.nav-tabs {
+  float: left;
+  border-bottom: 0;
+
+  li {
+    float: none;
+    margin: 0;
+
+    a {
+      margin-right: 0;
+      border: 0;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  border: 0;
+}
+
+.tab-content {
+  margin-left: 45px;
+
+  .tab-pane {
+    display: none;
+    background-color: #fff;
+    padding: 1.6rem;
+    overflow-y: auto;
+  }
+
+  .active {
+    display: block;
   }
 }
 
