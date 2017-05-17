@@ -122,7 +122,7 @@ public class V1_0__InitPostgresqlDatabase implements SpringJdbcMigration {
     private String createMessagesTable() {
         return "CREATE TABLE messages ( \n"
                 + "  id serial NOT NULL primary key, \n"
-                + "  from varchar(255) NOT NULL, \n"
+                + "  username varchar(255) NOT NULL, \n"
                 + "  email varchar(255) NOT NULL, \n"
                 + "  phone varchar(255) NOT NULL, \n"
                 + "  content text NOT NULL \n"
