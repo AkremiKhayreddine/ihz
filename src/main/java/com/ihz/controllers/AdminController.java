@@ -52,7 +52,7 @@ public class AdminController {
         for (MultipartFile multipartFile : fileMap.values()) {
             storageService.store(multipartFile);
             String fileName = multipartFile.getOriginalFilename().split("\\.")[0];
-            String filePath = System.getProperty("user.dir") + "\\upload-dir\\" + multipartFile.getOriginalFilename();
+            String filePath = System.getProperty("user.dir") + "/upload-dir/" + multipartFile.getOriginalFilename();
             File shapeFile = new File(filePath);
             boolean published = isPublished(fileName, shapeFile);
             if (published) {
