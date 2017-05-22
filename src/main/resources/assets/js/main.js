@@ -8,6 +8,7 @@ window.carte = new Vue({
         gMapCheckbox: true,
         positionCheckbox: false,
         geoserver: {},
+        map: {},
         form: new Form({
             model: {
                 title: '',
@@ -46,7 +47,7 @@ window.carte = new Vue({
             axios.post('/map/getAllCouches').then(function (response) {
                 axios.get('/admin/geoserver').then(config => {
                     vm.geoserver = config.data;
-                    const map = new Map({
+                    vm.map = new Map({
                         layers: response.data,
                         defaultLayer: 'carte_geologique',
                         workspace: config.data.workspace,
@@ -59,8 +60,8 @@ window.carte = new Vue({
                         google: false,
                         layers_primary_key: config.data.layers_primary_key
                     });
-                    let layersWFS_array = map.addLayersToMap();
-                    map.detectActionButton();
+                    let layersWFS_array = vm.map.addLayersToMap();
+                    vm.map.detectActionButton();
                 });
             });
         }
@@ -74,6 +75,9 @@ window.carte = new Vue({
         gMapCheckbox: function (value) {
             this.getAllCouches();
         },
+        positionCheckbox: function (value) {
+            this.map.initGeolocation(value);
+        }
     },
 });
 ol.Feature.prototype.getLayer = function (map) {

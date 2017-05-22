@@ -3,8 +3,12 @@ package com.ihz.models;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.NumberFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -15,13 +19,18 @@ public class Statistic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotEmpty(message = "Le champ nappe ne peut pas etre vide")
     private String nappe;
 
+    @NotEmpty(message = "Le champ date ne peut pas etre vide")
     private String date;
 
+    @NotEmpty(message = "Le champ type ne peut pas etre vide")
     private String type;
 
-    private double valeur;
+    @NotEmpty(message = "Le champ valeur ne peut pas etre vide")
+    @Pattern(regexp = "[+-]?([0-9]*[.])?[0-9]+", message = "Le champ valeur doit etre un nombre")
+    private String valeur;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Type(type = "date")
@@ -64,11 +73,11 @@ public class Statistic {
         this.type = type;
     }
 
-    public double getValeur() {
+    public String getValeur() {
         return valeur;
     }
 
-    public void setValeur(double valeur) {
+    public void setValeur(String valeur) {
         this.valeur = valeur;
     }
 

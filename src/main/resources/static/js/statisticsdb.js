@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 198);
+/******/ 	return __webpack_require__(__webpack_require__.s = 185);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -87,7 +87,10 @@ var Errors = function () {
     _createClass(Errors, [{
         key: "record",
         value: function record(errors) {
-            this.errors = errors;
+            this.errors = {};
+            for (var error in errors) {
+                this.errors[errors[error].field] = errors[error].defaultMessage;
+            }
         }
     }, {
         key: "has",
@@ -103,7 +106,7 @@ var Errors = function () {
         key: "get",
         value: function get(field) {
             if (this.errors[field]) {
-                return this.errors[field][0];
+                return this.errors[field];
             }
         }
     }, {
@@ -111,9 +114,9 @@ var Errors = function () {
         value: function clear(field) {
             if (field) {
                 delete this.errors[field];
-            } else {
-                this.errors = {};
+                return;
             }
+            this.errors = {};
         }
     }]);
 
@@ -133,12 +136,12 @@ var statisticsdb = new Vue({
     el: '#statisticsdb',
     data: {
         statistics: [],
-        form: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
+        statisticsform: new __WEBPACK_IMPORTED_MODULE_0__Form__["a" /* Form */]({
             model: {
                 nappe: '',
                 date: '',
                 type: '',
-                valeur: 0
+                valeur: ''
             }
         }),
         addNewStatistic: false
@@ -147,14 +150,14 @@ var statisticsdb = new Vue({
         saveNewStatistic: function saveNewStatistic() {
             var _this = this;
 
-            this.form.post('/statistics').then(function (response) {
+            this.statisticsform.post('/statistics').then(function (response) {
                 _this.getStatistics();
-            });
+            }).catch(function (error) {});
         },
         deleteStatistic: function deleteStatistic(id) {
             var _this2 = this;
 
-            this.form.delete('/statistics/' + id).then(function (response) {
+            this.statisticsform.delete('/statistics/' + id).then(function (response) {
                 _this2.getStatistics();
             });
         },
@@ -174,7 +177,7 @@ var statisticsdb = new Vue({
 
 /***/ }),
 
-/***/ 198:
+/***/ 185:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(140);

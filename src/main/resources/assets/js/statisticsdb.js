@@ -3,24 +3,25 @@ const statisticsdb = new Vue({
     el: '#statisticsdb',
     data: {
         statistics: [],
-        form: new Form({
+        statisticsform: new Form({
             model: {
                 nappe: '',
                 date: '',
                 type: '',
-                valeur: 0
+                valeur: ''
             },
         }),
         addNewStatistic: false,
     },
     methods: {
         saveNewStatistic(){
-            this.form.post('/statistics').then(response => {
+            this.statisticsform.post('/statistics').then(response => {
                 this.getStatistics();
+            }).catch(error=>{
             });
         },
         deleteStatistic(id){
-            this.form.delete('/statistics/' + id).then(response=> {
+            this.statisticsform.delete('/statistics/' + id).then(response=> {
                 this.getStatistics();
             });
         },

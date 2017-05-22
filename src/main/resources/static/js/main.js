@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 192);
+/******/ 	return __webpack_require__(__webpack_require__.s = 179);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -87,7 +87,10 @@ var Errors = function () {
     _createClass(Errors, [{
         key: "record",
         value: function record(errors) {
-            this.errors = errors;
+            this.errors = {};
+            for (var error in errors) {
+                this.errors[errors[error].field] = errors[error].defaultMessage;
+            }
         }
     }, {
         key: "has",
@@ -103,7 +106,7 @@ var Errors = function () {
         key: "get",
         value: function get(field) {
             if (this.errors[field]) {
-                return this.errors[field][0];
+                return this.errors[field];
             }
         }
     }, {
@@ -111,9 +114,9 @@ var Errors = function () {
         value: function clear(field) {
             if (field) {
                 delete this.errors[field];
-            } else {
-                this.errors = {};
+                return;
             }
+            this.errors = {};
         }
     }]);
 
@@ -139,6 +142,7 @@ window.carte = new Vue({
         gMapCheckbox: true,
         positionCheckbox: false,
         geoserver: {},
+        map: {},
         form: new __WEBPACK_IMPORTED_MODULE_1__Form__["a" /* Form */]({
             model: {
                 title: '',
@@ -177,7 +181,7 @@ window.carte = new Vue({
             axios.post('/map/getAllCouches').then(function (response) {
                 axios.get('/admin/geoserver').then(function (config) {
                     vm.geoserver = config.data;
-                    var map = new __WEBPACK_IMPORTED_MODULE_0__Map__["a" /* Map */]({
+                    vm.map = new __WEBPACK_IMPORTED_MODULE_0__Map__["a" /* Map */]({
                         layers: response.data,
                         defaultLayer: 'carte_geologique',
                         workspace: config.data.workspace,
@@ -190,8 +194,8 @@ window.carte = new Vue({
                         google: false,
                         layers_primary_key: config.data.layers_primary_key
                     });
-                    var layersWFS_array = map.addLayersToMap();
-                    map.detectActionButton();
+                    var layersWFS_array = vm.map.addLayersToMap();
+                    vm.map.detectActionButton();
                 });
             });
         }
@@ -207,6 +211,9 @@ window.carte = new Vue({
     watch: {
         gMapCheckbox: function gMapCheckbox(value) {
             this.getAllCouches();
+        },
+        positionCheckbox: function positionCheckbox(value) {
+            this.map.initGeolocation(value);
         }
     }
 });
@@ -526,6 +533,53 @@ var Map = function () {
     }
 
     _createClass(Map, [{
+        key: 'initGeolocation',
+        value: function initGeolocation(is_active) {
+            if (is_active) {
+                var _this = this;
+                var geolocation = new ol.Geolocation({
+                    projection: _this.map.getView().getProjection()
+                });
+                var accuracyFeature = new ol.Feature();
+                geolocation.on('change:accuracyGeometry', function () {
+                    accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+                });
+                var positionFeature = new ol.Feature();
+                positionFeature.setStyle(new ol.style.Style({
+                    image: new ol.style.Circle({
+                        radius: 6,
+                        fill: new ol.style.Fill({
+                            color: '#3399CC'
+                        }),
+                        stroke: new ol.style.Stroke({
+                            color: '#fff',
+                            width: 2
+                        })
+                    })
+                }));
+                geolocation.on('change:position', function () {
+                    var coordinates = geolocation.getPosition();
+                    positionFeature.setGeometry(coordinates ? new ol.geom.Point(coordinates) : null);
+                });
+
+                var geoLayer = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [accuracyFeature, positionFeature]
+                    })
+                });
+                geoLayer.set('name', 'geoLayer');
+                _this.map.addLayer(geoLayer);
+                geolocation.setTracking(is_active);
+            } else {
+                var _this2 = this;
+                this.map.getLayers().forEach(function (lyr) {
+                    if ('geoLayer' == lyr.get('name')) {
+                        _this2.map.removeLayer(lyr);
+                    }
+                });
+            }
+        }
+    }, {
         key: 'createMap',
         value: function createMap() {
             var _this = this;
@@ -540,7 +594,6 @@ var Map = function () {
                 projection: projection,
                 Zoom: 21
             });
-
             if (this.google) {
                 jQuery('#map').html('<div id="olmap" class="fill"></div><div id="gmap" class="fill"></div>');
                 this.map = new ol.Map({
@@ -1047,7 +1100,7 @@ var Map = function () {
 
 /***/ }),
 
-/***/ 192:
+/***/ 179:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(134);

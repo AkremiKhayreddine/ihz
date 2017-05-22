@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 200);
+/******/ 	return __webpack_require__(__webpack_require__.s = 187);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -87,7 +87,10 @@ var Errors = function () {
     _createClass(Errors, [{
         key: "record",
         value: function record(errors) {
-            this.errors = errors;
+            this.errors = {};
+            for (var error in errors) {
+                this.errors[errors[error].field] = errors[error].defaultMessage;
+            }
         }
     }, {
         key: "has",
@@ -103,7 +106,7 @@ var Errors = function () {
         key: "get",
         value: function get(field) {
             if (this.errors[field]) {
-                return this.errors[field][0];
+                return this.errors[field];
             }
         }
     }, {
@@ -111,9 +114,9 @@ var Errors = function () {
         value: function clear(field) {
             if (field) {
                 delete this.errors[field];
-            } else {
-                this.errors = {};
+                return;
             }
+            this.errors = {};
         }
     }]);
 
@@ -213,6 +216,14 @@ window.users = new Vue({
 
 /***/ }),
 
+/***/ 187:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(142);
+
+
+/***/ }),
+
 /***/ 2:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -297,14 +308,6 @@ var Form = function () {
 
     return Form;
 }();
-
-/***/ }),
-
-/***/ 200:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(142);
-
 
 /***/ })
 

@@ -45,11 +45,9 @@ window.layers = new Vue({
             });
         },
         deleteLayer(layerId){
-            if (this.hasPermission('delete-layer')) {
                 axios.delete('/layers/' + layerId).then(() => {
                     location.reload();
                 });
-            }
         },
         addLayer(){
             this.form.post('/layers').then(() => {

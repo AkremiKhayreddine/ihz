@@ -13,7 +13,7 @@ export class Map {
         btnDraw = {},
         google = false,
         bing = true,
-        layers_primary_key = 'ID'
+        layers_primary_key = 'ID',
     } = {}) {
         this.bing = bing;
         this.layers = layers;
@@ -54,6 +54,54 @@ export class Map {
         this.perimetre = 0;
     }
 
+
+    initGeolocation(is_active) {
+        if (is_active) {
+            let _this = this;
+            var geolocation = new ol.Geolocation({
+                projection: _this.map.getView().getProjection()
+            });
+            var accuracyFeature = new ol.Feature();
+            geolocation.on('change:accuracyGeometry', function () {
+                accuracyFeature.setGeometry(geolocation.getAccuracyGeometry());
+            });
+            var positionFeature = new ol.Feature();
+            positionFeature.setStyle(new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({
+                        color: '#3399CC'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff',
+                        width: 2
+                    })
+                })
+            }));
+            geolocation.on('change:position', function () {
+                var coordinates = geolocation.getPosition();
+                positionFeature.setGeometry(coordinates ?
+                    new ol.geom.Point(coordinates) : null);
+            });
+
+            let geoLayer = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [accuracyFeature, positionFeature]
+                })
+            });
+            geoLayer.set('name','geoLayer');
+            _this.map.addLayer(geoLayer);
+            geolocation.setTracking(is_active);
+        } else {
+            let _this = this;
+            this.map.getLayers().forEach(function (lyr) {
+                if ('geoLayer' == lyr.get('name')) {
+                    _this.map.removeLayer(lyr);
+                }
+            });
+        }
+    }
+
     createMap() {
         let _this = this;
         var mousePositionControl = new ol.control.MousePosition({
@@ -67,7 +115,6 @@ export class Map {
             projection: projection,
             Zoom: 21,
         });
-
         if (this.google) {
             jQuery('#map').html('<div id="olmap" class="fill"></div><div id="gmap" class="fill"></div>');
             this.map = new ol.Map({
@@ -473,7 +520,7 @@ export class Map {
         let interactionDraw = this.getDraw();
         document.addEventListener('keydown', function (e) {
             if (e.which == 27)
-                interactionDraw.removeLastPoint(); 
+                interactionDraw.removeLastPoint();
         });
         interactionDraw.on('drawstart', function (e) {
             _this.perimetreArray = [];

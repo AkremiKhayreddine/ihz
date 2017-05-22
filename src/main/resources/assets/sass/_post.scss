@@ -75,7 +75,13 @@
     flex-basis: 100%;
   }
 }
-
+.panel-sidebar{
+  border: none !important;
+  .panel-heading{
+    background-color: $primary-color;
+    color: white !important;
+  }
+}
 .sidebar_post {
   display: flex;
   flex-wrap: wrap;

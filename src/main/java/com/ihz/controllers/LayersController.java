@@ -4,10 +4,7 @@ import com.ihz.models.Layer;
 import com.ihz.repositories.LayersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/layers")
@@ -22,5 +19,11 @@ public class LayersController {
     @ResponseBody
     public void update(@RequestBody Layer layer) {
         layersRepository.save(layer);
+    }
+
+    @RequestMapping(value = "/{layer}", method = RequestMethod.DELETE)
+    @ResponseBody
+    public void update(@PathVariable Integer layer) {
+        layersRepository.delete(layer);
     }
 }

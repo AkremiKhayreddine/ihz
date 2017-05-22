@@ -5,37 +5,11 @@
 <main layout:fragment="page">
     <div class="container">
         <div class="row">
-            <div class="col-md-3 widget">
-                <div class="admin-widget">
-                    <i class="fa fa-edit"></i>
-                    <span>10</span> Articles
-                </div>
-            </div>
-            <div class="col-md-3 widget">
-                <div class="admin-widget">
-                    <i class="fa fa-file"></i>
-                    <span>10</span> Documents
-                </div>
-            </div>
-            <div class="col-md-3 widget">
-                <div class="admin-widget">
-                    <i class="fa fa-users"></i>
-                    <span>10</span> Utilisateurs
-                </div>
-            </div>
-            <div class="col-md-3 widget">
-                <div class="admin-widget">
-                    <i class="fa fa-envelope"></i>
-                    <span>10</span> Messages
-                </div>
-            </div>
+            <div th:replace="admin/fragments/users :: users"></div>
+            <div th:replace="admin/fragments/geoserver :: geoserver"></div>
         </div>
         <div class="row">
             <div th:replace="admin/fragments/layers :: layers"></div>
-        </div>
-        <div class="row">
-            <div th:replace="admin/fragments/users :: users"></div>
-            <div th:replace="admin/fragments/geoserver :: geoserver"></div>
         </div>
         <div id="messages" class="row">
             <div class="col-sm-12">
@@ -70,10 +44,12 @@
             <div class="col-sm-12">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <div class="panel-title"> Gestion des données</div>
-                    </div>
-                    <div class="panel-body">
-                        <button class="btn btn-primary" v-on:click="addNewStatistic = true">Ajouter</button>
+                        <div class="panel-title"> Gestion des données
+                            <button type="button" class="btn btn-default pull-right btn-sm"
+                                    data-toggle="modal"
+                                    data-target="#statistic"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <table class="table">
                         <thead>
@@ -86,28 +62,6 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-if="addNewStatistic">
-                            <td>
-                                <input v-model="form.model.nappe" type="text" class="form-control"/>
-                                <span class="help-block"><strong v-text="form.errors.get('nappe')"></strong> </span>
-                            </td>
-                            <td>
-                                <input v-model="form.model.date" type="text" class="form-control"/>
-                                <span class="help-block"><strong v-text="form.errors.get('date')"></strong> </span>
-                            </td>
-                            <td>
-                                <input v-model="form.model.type" type="text" class="form-control"/>
-                                <span class="help-block"><strong v-text="form.errors.get('type')"></strong> </span>
-                            </td>
-                            <td>
-                                <input v-model="form.model.valeur" type="text" class="form-control"/>
-                                <span class="help-block"><strong v-text="form.errors.get('valeur')"></strong> </span>
-                            </td>
-                            <td>
-                                <button class="btn btn-success" v-on:click="saveNewStatistic"><i class="fa fa-save"></i>
-                                </button>
-                            </td>
-                        </tr>
                         <tr v-for="statistic in statistics">
                             <td v-text="statistic.nappe"></td>
                             <td v-text="statistic.date"></td>
@@ -120,6 +74,65 @@
                         </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div id="statistic" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Ajouter un utilisateur</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group"
+                                     v-bind:class="{'has-error': statisticsform.errors.get('nappe')}">
+                                    <div>
+                                        <input id="nappe" v-model="statisticsform.model.nappe" type="text"
+                                               class="form-control"/>
+                                        <span v-if="statisticsform.errors.has('nappe')" class="help-block"><strong
+                                                v-text="statisticsform.errors.get('nappe')"></strong> </span>
+                                    </div>
+                                </div>
+                                <div class="form-group" v-bind:class="{'has-error': statisticsform.errors.get('date')}">
+                                    <div>
+                                        <input id="date" v-model="statisticsform.model.date" type="text"
+                                               class="form-control"/>
+                                        <span v-if="statisticsform.errors.has('date')" class="help-block"><strong
+                                                v-text="statisticsform.errors.get('date')"></strong> </span>
+                                    </div>
+                                </div>
+                                <div class="form-group" v-bind:class="{'has-error': statisticsform.errors.get('type')}">
+                                    <div>
+                                        <input id="type" v-model="statisticsform.model.type" type="text"
+                                               class="form-control"/>
+                                        <span v-if="statisticsform.errors.has('type')" class="help-block"><strong
+                                                v-text="statisticsform.errors.get('type')"></strong> </span>
+                                    </div>
+                                </div>
+                                <div class="form-group"
+                                     v-bind:class="{'has-error': statisticsform.errors.get('valeur')}">
+                                    <div>
+                                        <input id="valeur" v-model="statisticsform.model.valeur" type="text"
+                                               class="form-control"/>
+                                        <span v-if="statisticsform.errors.has('valeur')" class="help-block"><strong
+                                                v-text="statisticsform.errors.get('valeur')"></strong> </span>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="closeUserModal" type="button" class="btn btn-default"
+                                    data-dismiss="modal">
+                                Annuler
+                            </button>
+                            <button class="btn btn-primary"
+                                    v-on:click="saveNewStatistic">Ajouter
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

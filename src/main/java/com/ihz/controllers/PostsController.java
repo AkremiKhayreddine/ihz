@@ -8,14 +8,18 @@ import com.ihz.repositories.PostsRepository;
 import com.ihz.services.UserService;
 import com.ihz.storage.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Map;
 
@@ -58,12 +62,16 @@ public class PostsController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
-    public Post store(@RequestBody Post post) {
-        String userName = getPrincipal();
-        User user = userService.findByName(userName);
-        post.setUser(user);
-        return postsRepository.save(post);
-
+    public ResponseEntity<?> store(@Valid @RequestBody Post post, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(bindingResult.getAllErrors());
+        } else {
+            String userName = getPrincipal();
+            User user = userService.findByName(userName);
+            post.setUser(user);
+            Post p = postsRepository.save(post);
+            return ResponseEntity.ok(p);
+        }
     }
 
     @RequestMapping(value = "/{post}/edit", method = RequestMethod.GET)
