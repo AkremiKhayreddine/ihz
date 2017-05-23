@@ -458,11 +458,11 @@ export class Map {
             success: function (data) {
                 if (mode != 'delete') {
                     _this.sourceWFS_array[layerSelected].clear();
+                    _this.map.removeInteraction(interaction);
                 }
             }
         }).done();
-        _this.map.removeInteraction(interaction);
-    };
+    }
 
     editAction() {
         let _this = this;

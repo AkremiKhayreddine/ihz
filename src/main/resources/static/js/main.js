@@ -930,10 +930,10 @@ var Map = function () {
                 success: function success(data) {
                     if (mode != 'delete') {
                         _this.sourceWFS_array[layerSelected].clear();
+                        _this.map.removeInteraction(interaction);
                     }
                 }
             }).done();
-            _this.map.removeInteraction(interaction);
         }
     }, {
         key: 'editAction',
