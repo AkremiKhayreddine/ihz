@@ -36370,6 +36370,8 @@ var documentsSearch = new Vue({
     }
 });
 
+window.Event = new Vue();
+
 /***/ }),
 /* 130 */,
 /* 131 */,

@@ -191,6 +191,7 @@ window.carte = new Vue({
                         btnSelect: $('#btnSelect'),
                         btnDelete: $('#btnDelete'),
                         btnDraw: $('#btnArea'),
+                        btnEdit: $('#btnEdit'),
                         google: false,
                         layers_primary_key: config.data.layers_primary_key
                     });
@@ -434,7 +435,7 @@ var FormBuilder = function () {
                 }
             });
             newFeature.setProperties(featureProp);
-            jQuery.ajax('http://localhost:8080/geoserver/samar/wfs', {
+            jQuery.ajax(carte.geoserver.url + '/' + carte.geoserver.workspace + '/wfs', {
                 type: 'POST',
                 dataType: 'xml',
                 contentType: 'text/xml',
@@ -485,6 +486,8 @@ var Map = function () {
             btnDelete = _ref$btnDelete === undefined ? {} : _ref$btnDelete,
             _ref$btnDraw = _ref.btnDraw,
             btnDraw = _ref$btnDraw === undefined ? {} : _ref$btnDraw,
+            _ref$btnEdit = _ref.btnEdit,
+            btnEdit = _ref$btnEdit === undefined ? {} : _ref$btnEdit,
             _ref$google = _ref.google,
             google = _ref$google === undefined ? false : _ref$google,
             _ref$bing = _ref.bing,
@@ -514,6 +517,7 @@ var Map = function () {
         this.btnSelect = btnSelect;
         this.btnDelete = btnDelete;
         this.btnDraw = btnDraw;
+        this.btnEdit = btnEdit;
         this.interactionSelect = new ol.interaction.Select({
             style: new ol.style.Style({
                 fill: new ol.style.Fill({
@@ -526,6 +530,13 @@ var Map = function () {
             geometryName: 'the_geom'
         });
         this.interactionDelete = new ol.interaction.Select();
+        this.iSelect = new ol.interaction.Select({
+            wrapX: false
+        });
+        var _this = this;
+        this.iEdit = new ol.interaction.Modify({
+            features: _this.iSelect.getFeatures()
+        });
         this.projection = {};
         this.google = google;
         this.perimetreArray = [];
@@ -601,7 +612,7 @@ var Map = function () {
                         altShiftDragRotate: false,
                         dragPan: false,
                         rotate: false
-                    }).extend([new ol.interaction.DragPan({ kinetic: null })]),
+                    }).extend([new ol.interaction.MouseWheelZoom(), new ol.interaction.DragPan()]),
                     controls: ol.control.defaults({
                         zoom: true,
                         attribution: false
@@ -646,7 +657,7 @@ var Map = function () {
                         altShiftDragRotate: false,
                         dragPan: false,
                         rotate: false
-                    }).extend([new ol.interaction.DragPan({ kinetic: null })]),
+                    }).extend([new ol.interaction.MouseWheelZoom(), new ol.interaction.DragPan()]),
                     controls: ol.control.defaults({
                         zoom: true,
                         attribution: false
@@ -663,7 +674,7 @@ var Map = function () {
                         altShiftDragRotate: false,
                         dragPan: false,
                         rotate: false
-                    }).extend([new ol.interaction.DragPan({ kinetic: null })]),
+                    }).extend([new ol.interaction.MouseWheelZoom(), new ol.interaction.DragPan()]),
                     controls: ol.control.defaults({
                         zoom: true,
                         attribution: false
@@ -688,8 +699,7 @@ var Map = function () {
         value: function getProjection() {
             var _this = this;
             if (this.google || this.bing) {
-                proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
-                proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
+                this.defProj4();
                 return new ol.proj.Projection({
                     code: 'EPSG:3857',
                     units: 'm',
@@ -702,6 +712,12 @@ var Map = function () {
                     axisOrientation: 'neu'
                 });
             }
+        }
+    }, {
+        key: 'defProj4',
+        value: function defProj4() {
+            proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
+            proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
         }
     }, {
         key: 'createFormatGML',
@@ -764,7 +780,6 @@ var Map = function () {
             var _this = this;
             var projection = _this.getProjection();
             var sourceWFS = void 0;
-            var claims = [];
             sourceWFS = new ol.source.Vector({
                 loader: function loader(extent, resolution, projection) {
                     jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
@@ -883,6 +898,95 @@ var Map = function () {
             _this.btnDraw.click(function () {
                 _this.drawAction();
             });
+            _this.btnEdit.click(function () {
+                _this.editAction();
+            });
+        }
+    }, {
+        key: 'transactWFS',
+        value: function transactWFS(mode, f, layerSelected, interaction) {
+            var _this = this;
+            var node;
+            switch (mode) {
+                case 'insert':
+                    node = _this.formatWFS_array[layerSelected].writeTransaction([f], null, null, _this.formatGML_array[layerSelected]);
+                    break;
+                case 'update':
+                    node = _this.formatWFS_array[layerSelected].writeTransaction(null, [f], null, _this.formatGML_array[layerSelected]);
+                    _this.removeNodeForWfsUpdate(node, "geometry");
+                    break;
+                case 'delete':
+                    node = _this.formatWFS_array[layerSelected].writeTransaction(null, null, [f], _this.formatGML_array[layerSelected]);
+                    break;
+            }
+            var s = new XMLSerializer();
+            var payload = s.serializeToString(node);
+            jQuery.ajax(carte.geoserver.url + '/' + carte.geoserver.workspace + '/wfs', {
+                type: 'POST',
+                dataType: 'xml',
+                processData: false,
+                contentType: 'text/xml',
+                data: payload,
+                success: function success(data) {
+                    if (mode != 'delete') {
+                        _this.sourceWFS_array[layerSelected].clear();
+                    }
+                }
+            }).done();
+            _this.map.removeInteraction(interaction);
+        }
+    }, {
+        key: 'editAction',
+        value: function editAction() {
+            var _this = this;
+            _this.addFormatWFS();
+            _this.addFormatGML();
+            this.btnEdit.parent().find('.btn').each(function (index, element) {
+                jQuery(this).removeClass('active');
+            });
+            this.btnEdit.addClass('active');
+            this.map.addInteraction(this.iSelect);
+            this.map.addInteraction(this.iEdit);
+            var s = new XMLSerializer();
+            var dirty = {};
+            var layerSelected = '';
+            _this.iSelect.getFeatures().on('add', function (e) {
+                layerSelected = e.target.item(0).getLayer(_this.map).get('name');
+                e.element.on('change', function (e) {
+                    dirty[e.target.getId()] = true;
+                });
+            });
+            _this.iSelect.getFeatures().on('remove', function (e) {
+                var f = e.element;
+                if (dirty[f.getId()]) {
+                    delete dirty[f.getId()];
+                    var featureProperties = f.getProperties();
+                    delete featureProperties.boundedBy;
+                    var clone = new ol.Feature({
+                        the_geom: f.getGeometry()
+                    });
+                    clone.setProperties(featureProperties);
+                    clone.setGeometryName("the_geom");
+                    var newFeature = _this.transform_geometry(clone);
+                    newFeature.setId(f.getId());
+                    newFeature.set('SUPERFICIE', _this.formatArea(f.getGeometry()));
+                    _this.transactWFS('update', newFeature, layerSelected, _this.iEdit);
+                }
+            });
+        }
+    }, {
+        key: 'removeNodeForWfsUpdate',
+        value: function removeNodeForWfsUpdate(node, valueToRemove) {
+            var propNodes = node.getElementsByTagName("Property");
+            for (var i = 0; i < propNodes.length; i++) {
+                var propNode = propNodes[i];
+                var propNameNode = propNode.firstElementChild;
+                var propNameNodeValue = propNameNode.firstChild;
+                if (propNameNodeValue.nodeValue === valueToRemove) {
+                    propNode.parentNode.removeChild(propNode);
+                    break;
+                }
+            }
         }
     }, {
         key: 'getActiveLayers',
@@ -915,7 +1019,7 @@ var Map = function () {
                     var url = source.getGetFeatureInfoUrl(evt.mapBrowserEvent.coordinate, viewResolution, view.getProjection(), { 'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50 });
                     var aa = evt.selected[0].getGeometry().getExtent();
                     var oo = ol.extent.getCenter(aa);
-                    proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
+                    _this.defProj4();
                     var coord = ol.proj.transform(oo, 'EPSG:3857', 'EPSG:4326');
                     var lon = coord[0];
                     var lat = coord[1];
@@ -932,20 +1036,10 @@ var Map = function () {
                                 jQuery.each(props, function (key, value) {
                                     info += '<div class="col-md-4">' + key + ':</div><div class="col-md-8">' + value + '</div>';
                                 });
-                                axios.get('/features/' + evt.selected[0].get(_this.layers_primary_key)).then(function (response) {
-                                    info += '<div class="col-md-12 alert alert-danger">' + '<ul style="list-style: none;margin: 0;padding: 0">' + '<li>' + response.data.claim.title + '</li>' + '<li>' + response.data.claim.description + '</li>' + '</ul></div>';
-                                    info += '</div>';
-                                    jQuery("#infosPopup").show();
-                                    jQuery("#infosPopup-bottom").show();
-                                    document.getElementById('infosPopupCont').innerHTML = info;
-                                }).catch(function (error) {
-                                    info += '</div>';
-                                    jQuery("#infosPopup").show();
-                                    jQuery("#infosPopup-bottom").show();
-                                    //document.getElementById('nodelist').innerHTML = table;
-                                    document.getElementById('mailContent').innerHTML = mail;
-                                    document.getElementById('infosPopupCont').innerHTML = info;
-                                });
+                                info += '</div>';
+                                jQuery("#infosPopup").show();
+                                jQuery("#infosPopup-bottom").show();
+                                document.getElementById('infosPopupCont').innerHTML = info;
                             }
                         });
                     }
@@ -964,23 +1058,13 @@ var Map = function () {
             });
             _this.btnDelete.addClass('active');
             _this.map.removeInteraction(_this.interactionSelect);
+            _this.map.removeInteraction(_this.iSelect);
+            _this.map.removeInteraction(_this.iEdit);
             _this.map.removeInteraction(_this.getDraw());
             _this.map.addInteraction(this.interactionDelete);
             _this.interactionDelete.getFeatures().on('add', function (e) {
                 var layerSelected = e.target.item(0).getLayer(_this.map);
-                var s = new XMLSerializer();
-                jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
-                    type: 'POST',
-                    dataType: 'xml',
-                    contentType: 'text/xml',
-                    data: s.serializeToString(_this.formatWFS_array[layerSelected.get('name')].writeTransaction(null, null, [e.target.item(0)], _this.formatGML_array[layerSelected.get('name')])),
-                    success: function success(data) {
-                        Event.$emit('alert', 'Votre modification a été enregistré avec succé');
-                        _this.layersWFS_array[layerSelected.get('name')].getSource().clear();
-                        _this.interactionDelete.getFeatures().clear();
-                        _this.map.removeInteraction(_this.interactionDelete);
-                    }
-                }).done();
+                _this.transactWFS('delete', e.target.item(0), layerSelected.get('name'), _this.interactionDelete);
             });
         }
     }, {
@@ -1006,12 +1090,11 @@ var Map = function () {
             });
             interactionDraw.on('drawend', function (e) {
                 _this.map.removeInteraction(interactionDraw);
-                proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
-                proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
-                var aa = e.feature.getGeometry().getExtent();
-                var oo = ol.extent.getCenter(aa);
+                _this.defProj4();
+                var extent = e.feature.getGeometry().getExtent();
+                var center = ol.extent.getCenter(extent);
                 var newFeature = _this.transform_geometry(e.feature);
-                var coord = ol.proj.transform(oo, 'EPSG:3857', 'EPSG:4326');
+                var coord = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326');
                 var lon = coord[0];
                 var lat = coord[1];
                 var props;
@@ -1025,9 +1108,6 @@ var Map = function () {
                         return a.get(_this.layers_primary_key) - b.get(_this.layers_primary_key);
                     });
                     var fid = _this.layersWFS_array[jQuery('#select_layer').val()].getSource().getFeatures().length;
-                    console.log(array[0].get(_this.layers_primary_key));
-                    console.log(array[fid - 2].get(_this.layers_primary_key));
-                    console.log(array[fid - 1].get(_this.layers_primary_key));
                     newFeature.setId(array[fid - 1].get(_this.layers_primary_key) + 1);
                     props = form.create(jQuery('#select_layer').val(), _this.layersWFS_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry()), _this.layers_primary_key, newFeature.getId());
                 });
@@ -1036,7 +1116,6 @@ var Map = function () {
                         carte.form.model.lon = lon;
                         carte.form.model.lat = lat;
                         carte.form.model.feature = response;
-                        $('#addClaim').click();
                     });
                 });
             });

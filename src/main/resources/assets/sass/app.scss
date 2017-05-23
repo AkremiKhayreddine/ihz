@@ -36,11 +36,17 @@ body {
   }
 }
 
-#page {
-  width: 90%;
-  margin-left: 5%;
-  background-color: white;
-  border: 1px solid #dddddd;
+@media only screen and (min-device-width: 1200px) {
+  #page {
+    width: 90%;
+    margin-left: 5%;
+    background-color: white;
+    border: 1px solid #dddddd;
+  }
+  .navbar-fixed-top {
+    width: 90%;
+    margin-left: 5%;
+  }
 }
 
 a {

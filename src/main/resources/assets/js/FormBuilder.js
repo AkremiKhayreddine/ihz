@@ -65,7 +65,7 @@ export class FormBuilder {
             }
         });
         newFeature.setProperties(featureProp);
-        jQuery.ajax('http://localhost:8080/geoserver/samar/wfs', {
+        jQuery.ajax(carte.geoserver.url+'/'+carte.geoserver.workspace+'/wfs', {
             type: 'POST',
             dataType: 'xml',
             contentType: 'text/xml',

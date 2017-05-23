@@ -57,6 +57,7 @@ window.carte = new Vue({
                         btnSelect: $('#btnSelect'),
                         btnDelete: $('#btnDelete'),
                         btnDraw: $('#btnArea'),
+                        btnEdit:$('#btnEdit'),
                         google: false,
                         layers_primary_key: config.data.layers_primary_key
                     });

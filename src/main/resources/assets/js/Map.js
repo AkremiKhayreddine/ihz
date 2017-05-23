@@ -11,6 +11,7 @@ export class Map {
         btnSelect = {},
         btnDelete = {},
         btnDraw = {},
+        btnEdit = {},
         google = false,
         bing = true,
         layers_primary_key = 'ID',
@@ -36,6 +37,7 @@ export class Map {
         this.btnSelect = btnSelect;
         this.btnDelete = btnDelete;
         this.btnDraw = btnDraw;
+        this.btnEdit = btnEdit;
         this.interactionSelect = new ol.interaction.Select({
             style: new ol.style.Style({
                 fill: new ol.style.Fill({
@@ -48,6 +50,13 @@ export class Map {
             geometryName: 'the_geom'
         });
         this.interactionDelete = new ol.interaction.Select();
+        this.iSelect = new ol.interaction.Select({
+            wrapX: false
+        });
+        let _this = this;
+        this.iEdit = new ol.interaction.Modify({
+            features: _this.iSelect.getFeatures(),
+        });
         this.projection = {};
         this.google = google;
         this.perimetreArray = [];
@@ -89,7 +98,7 @@ export class Map {
                     features: [accuracyFeature, positionFeature]
                 })
             });
-            geoLayer.set('name','geoLayer');
+            geoLayer.set('name', 'geoLayer');
             _this.map.addLayer(geoLayer);
             geolocation.setTracking(is_active);
         } else {
@@ -122,7 +131,10 @@ export class Map {
                     altShiftDragRotate: false,
                     dragPan: false,
                     rotate: false
-                }).extend([new ol.interaction.DragPan({kinetic: null})]),
+                }).extend([
+                    new ol.interaction.MouseWheelZoom(),
+                    new ol.interaction.DragPan()
+                ]),
                 controls: ol.control.defaults({
                     zoom: true,
                     attribution: false
@@ -172,7 +184,10 @@ export class Map {
                     altShiftDragRotate: false,
                     dragPan: false,
                     rotate: false
-                }).extend([new ol.interaction.DragPan({kinetic: null})]),
+                }).extend([
+                    new ol.interaction.MouseWheelZoom(),
+                    new ol.interaction.DragPan()
+                ]),
                 controls: ol.control.defaults({
                     zoom: true,
                     attribution: false
@@ -190,7 +205,10 @@ export class Map {
                     altShiftDragRotate: false,
                     dragPan: false,
                     rotate: false
-                }).extend([new ol.interaction.DragPan({kinetic: null})]),
+                }).extend([
+                    new ol.interaction.MouseWheelZoom(),
+                    new ol.interaction.DragPan()
+                ]),
                 controls: ol.control.defaults({
                     zoom: true,
                     attribution: false
@@ -213,8 +231,7 @@ export class Map {
     getProjection() {
         let _this = this;
         if (this.google || this.bing) {
-            proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
-            proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
+            this.defProj4();
             return new ol.proj.Projection({
                 code: 'EPSG:3857',
                 units: 'm',
@@ -227,6 +244,11 @@ export class Map {
                 axisOrientation: 'neu'
             });
         }
+    }
+
+    defProj4() {
+        proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
+        proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
     }
 
     createFormatGML(layerName) {
@@ -283,7 +305,6 @@ export class Map {
         let _this = this;
         let projection = _this.getProjection();
         let sourceWFS;
-        let claims = [];
         sourceWFS = new ol.source.Vector({
                 loader: function (extent, resolution, projection) {
                     jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
@@ -405,6 +426,93 @@ export class Map {
         _this.btnDraw.click(function () {
             _this.drawAction();
         });
+        _this.btnEdit.click(function () {
+            _this.editAction();
+
+        })
+    }
+
+    transactWFS(mode, f, layerSelected, interaction) {
+        let _this = this;
+        var node;
+        switch (mode) {
+            case 'insert':
+                node = _this.formatWFS_array[layerSelected].writeTransaction([f], null, null, _this.formatGML_array[layerSelected]);
+                break;
+            case 'update':
+                node = _this.formatWFS_array[layerSelected].writeTransaction(null, [f], null, _this.formatGML_array[layerSelected]);
+                _this.removeNodeForWfsUpdate(node, "geometry");
+                break;
+            case 'delete':
+                node = _this.formatWFS_array[layerSelected].writeTransaction(null, null, [f], _this.formatGML_array[layerSelected]);
+                break;
+        }
+        var s = new XMLSerializer();
+        var payload = s.serializeToString(node);
+        jQuery.ajax(carte.geoserver.url + '/' + carte.geoserver.workspace + '/wfs', {
+            type: 'POST',
+            dataType: 'xml',
+            processData: false,
+            contentType: 'text/xml',
+            data: payload,
+            success: function (data) {
+                if (mode != 'delete') {
+                    _this.sourceWFS_array[layerSelected].clear();
+                }
+            }
+        }).done();
+        _this.map.removeInteraction(interaction);
+    };
+
+    editAction() {
+        let _this = this;
+        _this.addFormatWFS();
+        _this.addFormatGML();
+        this.btnEdit.parent().find('.btn').each(function (index, element) {
+            jQuery(this).removeClass('active');
+        });
+        this.btnEdit.addClass('active');
+        this.map.addInteraction(this.iSelect);
+        this.map.addInteraction(this.iEdit);
+        var s = new XMLSerializer();
+        let dirty = {};
+        var layerSelected = '';
+        _this.iSelect.getFeatures().on('add', function (e) {
+            layerSelected = e.target.item(0).getLayer(_this.map).get('name');
+            e.element.on('change', function (e) {
+                dirty[e.target.getId()] = true;
+            });
+        });
+        _this.iSelect.getFeatures().on('remove', function (e) {
+            var f = e.element;
+            if (dirty[f.getId()]) {
+                delete dirty[f.getId()];
+                var featureProperties = f.getProperties();
+                delete featureProperties.boundedBy;
+                var clone = new ol.Feature({
+                    the_geom: f.getGeometry()
+                });
+                clone.setProperties(featureProperties);
+                clone.setGeometryName("the_geom");
+                var newFeature = _this.transform_geometry(clone);
+                newFeature.setId(f.getId());
+                newFeature.set('SUPERFICIE', _this.formatArea(f.getGeometry()));
+                _this.transactWFS('update', newFeature, layerSelected, _this.iEdit);
+            }
+        });
+    }
+
+    removeNodeForWfsUpdate(node, valueToRemove) {
+        var propNodes = node.getElementsByTagName("Property");
+        for (var i = 0; i < propNodes.length; i++) {
+            var propNode = propNodes[i];
+            var propNameNode = propNode.firstElementChild;
+            var propNameNodeValue = propNameNode.firstChild;
+            if (propNameNodeValue.nodeValue === valueToRemove) {
+                propNode.parentNode.removeChild(propNode);
+                break;
+            }
+        }
     }
 
     getActiveLayers(layers) {
@@ -437,7 +545,7 @@ export class Map {
                     {'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50});
                 var aa = evt.selected[0].getGeometry().getExtent();
                 var oo = ol.extent.getCenter(aa);
-                proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
+                _this.defProj4();
                 var coord = ol.proj.transform(oo, 'EPSG:3857', 'EPSG:4326');
                 var lon = coord[0];
                 var lat = coord[1];
@@ -454,24 +562,10 @@ export class Map {
                             jQuery.each(props, function (key, value) {
                                 info += '<div class="col-md-4">' + key + ':</div><div class="col-md-8">' + value + '</div>';
                             });
-                            axios.get('/features/' + evt.selected[0].get(_this.layers_primary_key)).then(response => {
-                                info += '<div class="col-md-12 alert alert-danger">' +
-                                    '<ul style="list-style: none;margin: 0;padding: 0">' +
-                                    '<li>' + response.data.claim.title + '</li>' +
-                                    '<li>' + response.data.claim.description + '</li>' +
-                                    '</ul></div>';
-                                info += '</div>';
-                                jQuery("#infosPopup").show();
-                                jQuery("#infosPopup-bottom").show();
-                                document.getElementById('infosPopupCont').innerHTML = info;
-                            }).catch(error => {
-                                info += '</div>';
-                                jQuery("#infosPopup").show();
-                                jQuery("#infosPopup-bottom").show();
-                                //document.getElementById('nodelist').innerHTML = table;
-                                document.getElementById('mailContent').innerHTML = mail;
-                                document.getElementById('infosPopupCont').innerHTML = info;
-                            });
+                            info += '</div>';
+                            jQuery("#infosPopup").show();
+                            jQuery("#infosPopup-bottom").show();
+                            document.getElementById('infosPopupCont').innerHTML = info;
                         }
                     });
                 }
@@ -489,23 +583,13 @@ export class Map {
         });
         _this.btnDelete.addClass('active');
         _this.map.removeInteraction(_this.interactionSelect);
+        _this.map.removeInteraction(_this.iSelect);
+        _this.map.removeInteraction(_this.iEdit);
         _this.map.removeInteraction(_this.getDraw());
         _this.map.addInteraction(this.interactionDelete);
         _this.interactionDelete.getFeatures().on('add', function (e) {
             var layerSelected = e.target.item(0).getLayer(_this.map);
-            var s = new XMLSerializer();
-            jQuery.ajax(_this.url + '/' + _this.workspace + '/wfs', {
-                type: 'POST',
-                dataType: 'xml',
-                contentType: 'text/xml',
-                data: s.serializeToString(_this.formatWFS_array[layerSelected.get('name')].writeTransaction(null, null, [e.target.item(0)], _this.formatGML_array[layerSelected.get('name')])),
-                success: function (data) {
-                    Event.$emit('alert', 'Votre modification a été enregistré avec succé');
-                    _this.layersWFS_array[layerSelected.get('name')].getSource().clear();
-                    _this.interactionDelete.getFeatures().clear();
-                    _this.map.removeInteraction(_this.interactionDelete);
-                }
-            }).done();
+            _this.transactWFS('delete', e.target.item(0), layerSelected.get('name'), _this.interactionDelete);
         });
     }
 
@@ -531,12 +615,11 @@ export class Map {
         });
         interactionDraw.on('drawend', function (e) {
             _this.map.removeInteraction(interactionDraw);
-            proj4.defs("EPSG:32632", "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs");
-            proj4.defs("EPSG:22332", "+proj=utm +zone=32 +a=6378249.2 +b=6356515 +towgs84=-263,6,431,0,0,0,0 +units=m +no_defs");
-            var aa = e.feature.getGeometry().getExtent();
-            var oo = ol.extent.getCenter(aa);
+            _this.defProj4();
+            var extent = e.feature.getGeometry().getExtent();
+            var center = ol.extent.getCenter(extent);
             var newFeature = _this.transform_geometry(e.feature);
-            var coord = ol.proj.transform(oo, 'EPSG:3857', 'EPSG:4326');
+            var coord = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326');
             var lon = coord[0];
             var lat = coord[1];
             var props;
@@ -552,9 +635,6 @@ export class Map {
                     }
                 );
                 var fid = _this.layersWFS_array[jQuery('#select_layer').val()].getSource().getFeatures().length;
-                console.log(array[0].get(_this.layers_primary_key));
-                console.log(array[fid - 2].get(_this.layers_primary_key));
-                console.log(array[fid - 1].get(_this.layers_primary_key));
                 newFeature.setId(array[fid - 1].get(_this.layers_primary_key) + 1);
                 props = form.create(jQuery('#select_layer').val(), _this.layersWFS_array, _this.formatPerimetre(e.feature.getGeometry()), _this.formatArea(e.feature.getGeometry()), _this.layers_primary_key, newFeature.getId());
             });
@@ -563,7 +643,6 @@ export class Map {
                     carte.form.model.lon = lon;
                     carte.form.model.lat = lat;
                     carte.form.model.feature = response;
-                    $('#addClaim').click();
                 });
             });
         });

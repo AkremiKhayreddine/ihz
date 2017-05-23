@@ -198,3 +198,5 @@ const documentsSearch = new Vue({
     }
 });
 
+window.Event = new Vue();
+
