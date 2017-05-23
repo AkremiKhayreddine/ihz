@@ -459,9 +459,21 @@ export class Map {
                 if (mode != 'delete') {
                     _this.sourceWFS_array[layerSelected].clear();
                     _this.map.removeInteraction(interaction);
+                } else {
+                    _this.deleteFeatures(interaction,interaction.getFeatures(), _this.sourceWFS_array[layerSelected]);
                 }
             }
         }).done();
+    }
+
+    deleteFeatures(interaction,selectedFeat, vectorSource) {
+        if (selectedFeat.getLength() > 0) {
+            var toDeleteFeat = interaction.getFeatures().getArray()[0];
+            vectorSource.removeFeature(toDeleteFeat);
+            interaction.getFeatures().remove(toDeleteFeat);
+        }
+        else
+            window.alert("Please select a layer first :" + selectedFeat.getLength());
     }
 
     editAction() {
