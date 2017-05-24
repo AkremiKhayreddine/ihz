@@ -17,6 +17,11 @@
 </head>
 <body>
 <div id="page">
+    <!-- alerts -->
+    <div id="alerts" class="app-alert">
+        <alert :message="message" :type="type" v-if="show"></alert>
+    </div>
+    <!-- end alerts -->
     <!-- Navbar -->
     <nav th:replace="layout/fragments/navbar :: navbar">
 

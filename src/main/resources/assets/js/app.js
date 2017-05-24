@@ -26,9 +26,11 @@ window.fbAsyncInit = function () {
     fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 window.spectrum = require('spectrum-colorpicker');
+window.toastr = require('toastr');
 window.select2 = require('select2');
 window.Dropzone = require("dropzone");
 window.moment = require('moment');
+
 window.moment.locale('fr');
 Vue.component('layer-color', {
     props: ['color', 'layer', 'showinput'],
@@ -199,4 +201,51 @@ const documentsSearch = new Vue({
 });
 
 window.Event = new Vue();
+Vue.component('alert', {
+    props: ['title', 'message', 'type'],
+    template: '<div></div>',
+    created(){
+        toastr.options = {
+            "timeOut": "5000",
+            "extendedTimeOut": "5000",
+            "showDuration": "300",
+            "progressBar": true,
+            "closeButton": true,
+        }
+    },
+    mounted(){
+        toastr[this.type](this.message);
+    }
+});
+
+window.alerts = new Vue({
+    el: '#alerts',
+    data: {
+        message: '',
+        type: 'success',
+        show: false
+    },
+    methods: {
+        hide(){
+            var vm = this;
+            setTimeout(function () {
+                vm.show = false;
+            }, 5000);
+        }
+    },
+    created(){
+        Event.$on('alert', (message) => {
+            this.show = true;
+            this.message = message;
+            var vm = this;
+        })
+    },
+    watch: {
+        show: function (value) {
+            if (value) {
+                this.hide();
+            }
+        },
+    },
+});
 

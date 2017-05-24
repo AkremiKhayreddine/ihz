@@ -22,4 +22,5 @@ mix.styles([
     'src/main/resources/static/css/font-awesome.css',
     'node_modules/dropzone/dist/dropzone.css',
     'node_modules/spectrum-colorpicker/spectrum.css',
+    'node_modules/toastr/build/toastr.css',
 ], 'src/main/resources/static/css/all.css');

@@ -25,6 +25,7 @@
     "font-awesome": "^4.7.0",
     "moment": "^2.18.1",
     "select2": "^4.0.3",
-    "spectrum-colorpicker": "^1.8.0"
+    "spectrum-colorpicker": "^1.8.0",
+    "toastr": "^2.1.2"
   }
 }

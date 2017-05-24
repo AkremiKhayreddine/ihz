@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 176);
+/******/ 	return __webpack_require__(__webpack_require__.s = 178);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -159,6 +159,7 @@ var editPost = new Vue({
                 _this2.post.id = data.id;
                 _this2.zone.options.url = "/posts/" + _this2.post.id + "/upload";
                 _this2.zone.processQueue();
+                Event.$emit('alert', 'Votre modification a été enregistrer avec succé');
             });
         }
     },
@@ -187,7 +188,7 @@ var editPost = new Vue({
 
 /***/ }),
 
-/***/ 176:
+/***/ 178:
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__(131);

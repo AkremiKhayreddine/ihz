@@ -22,6 +22,7 @@ const editPost = new Vue({
                 this.post.id = data.id;
                 this.zone.options.url = "/posts/" + this.post.id + "/upload";
                 this.zone.processQueue();
+                Event.$emit('alert','Votre modification a été enregistrer avec succé');
             });
         }
     }

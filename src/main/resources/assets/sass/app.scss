@@ -699,6 +699,25 @@ ul.contact-get-in-touch {
   }
 }
 
+
+
+.app-alert {
+  position: absolute;
+  bottom: 15px;
+  left: 30px;
+  z-index: 100;
+}
+
+.app-alert.alert-danger {
+  background-color: $red !important;
+  color: white;
+}
+
+.app-alert.alert-success {
+  background-color: $green !important;
+  color: white;
+}
+
 @import "post";
 @import "form";
 @import "admin";
